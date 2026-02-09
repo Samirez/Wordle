@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 7530448985194853600}
   - component: {fileID: 3501478156914306398}
   m_Layer: 0
-  m_Name: Start
-  m_TagString: Untagged
+  m_Name: StartButton
+  m_TagString: Start
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -120,7 +120,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7530448985194853600}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 851930523775868741}
+        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_MethodName: StartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: StartGame
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1813139868489680529
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,7 +390,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3249459067003049066}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 851930523775868741}
+        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_MethodName: OpenSettings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5249971541055990526
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +523,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6231430268123855678}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 851930523775868741}
+        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_MethodName: HighScores
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5462330938989977856
 GameObject:
   m_ObjectHideFlags: 0
@@ -757,7 +793,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5442457133101699743}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 851930523775868741}
+        m_TargetAssemblyTypeName: Menu, Assembly-CSharp
+        m_MethodName: ExitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6711398488670097140
 GameObject:
   m_ObjectHideFlags: 0
@@ -784,7 +832,7 @@ RectTransform:
   m_GameObject: {fileID: 6711398488670097140}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.9481167, y: 1.9481167, z: 1.9481167}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4737014048757197591}
@@ -875,7 +923,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Settings
+  m_text: Exit
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
