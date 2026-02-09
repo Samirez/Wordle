@@ -1,69 +1,67 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class Menu : MonoBehaviour
+namespace Wordle.Core
 {
-    private bool isMenuOpen = true;
-    private Button startButton;
-    private GameObject menuUI, scoreUI, settingsUI;
-
-    public void Awake()
+    public class Menu : MonoBehaviour
     {
-        menuUI = GameObject.Find("MenuUI");
-        if (menuUI == null)
+        private bool isMenuOpen = true;
+        private GameObject menuUI, scoreUI, settingsUI;
+
+        public void Awake()
         {
-            menuUI = gameObject;
-        }
-        menuUI.SetActive(isMenuOpen);
-        startButton = menuUI.transform.Find("StartButton").GetComponentInChildren<Button>();
-        startButton.onClick.AddListener(StartGame);
+            menuUI = GameObject.Find("MenuUI");
+            if (menuUI == null)
+            {
+                menuUI = gameObject;
+            }
+            menuUI.SetActive(isMenuOpen);
+            scoreUI = GameObject.Find("ScoreUI");
+            if (scoreUI != null)
+            {
+                scoreUI.SetActive(false);
+            }
 
-        scoreUI = GameObject.Find("ScoreUI");
-        if (scoreUI != null)
+            settingsUI = GameObject.Find("SettingsUI");
+            if (settingsUI != null)
+            {
+                settingsUI.SetActive(false);
+            }
+        }
+
+        public void StartGame()
         {
-            scoreUI.SetActive(false);
+            isMenuOpen = false;
+            menuUI.SetActive(isMenuOpen);
         }
 
-        settingsUI = GameObject.Find("SettingsUI");
-        if (settingsUI != null)
+        public void HighScores()
         {
-            settingsUI.SetActive(false);
+            isMenuOpen = false;
+            menuUI.SetActive(isMenuOpen);
+            if (scoreUI != null)
+            {
+                scoreUI.SetActive(true);
+            }
         }
-    }
 
-    public void StartGame()
-    {
-        isMenuOpen = false;
-        menuUI.SetActive(isMenuOpen);
-    }
-
-    public void HighScores()
-    {
-        isMenuOpen = false;
-        menuUI.SetActive(isMenuOpen);
-        if (scoreUI != null)
+        public void OpenSettings()
         {
-            scoreUI.SetActive(true);
+            isMenuOpen = false;
+            menuUI.SetActive(isMenuOpen);
+            if (settingsUI != null)
+            {
+                settingsUI.SetActive(true);
+            }
         }
-    }
 
-    public void OpenSettings()
-    {
-        isMenuOpen = false;
-        menuUI.SetActive(isMenuOpen);
-        if (settingsUI != null)
+        public void ExitGame()
         {
-            settingsUI.SetActive(true);
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Application.Quit();
+            #endif
         }
-    }
-
-    public void ExitGame()
-    {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-            Application.Quit();
-        #endif
     }
 }
