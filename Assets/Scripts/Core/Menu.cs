@@ -40,7 +40,7 @@ namespace Wordle.Core
         {
             if (boardGenerator == null)
             {
-                Debug.LogError("Cannot start game: BoardGenerator not found.");
+                Debug.LogError($"{name} ({GetType().Name}): Cannot start game; BoardGenerator not found.");
                 return;
             }
             isMenuOpen = false;
