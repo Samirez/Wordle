@@ -16,7 +16,7 @@ namespace Wordle.Board
         readonly Random random = new();
         public Cell[,] board;
         public ObservableCollection<ObservableCollection<char>> Chars { get; set; }
-        public List<string> Words { get; private set; }
+        public List<string> Words { get; private set; } = new List<string>();
         private string secretWord;
 
         public enum WordDirection
@@ -27,7 +27,21 @@ namespace Wordle.Board
 
         void Start()
         {
-            secretWord = WordReader();
+            try
+            {
+                secretWord = WordReader();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"{name} ({GetType().Name}): Failed to read secret word: {ex.Message}");
+                secretWord = "";
+            }
+
+            if (string.IsNullOrEmpty(secretWord))
+            {
+                Debug.LogError($"{name} ({GetType().Name}): Secret word is empty; board generation may be disabled.");
+                secretWord = "APPLE";
+            }
         }
 
         public void FillWithEmptyChars()
@@ -46,16 +60,16 @@ namespace Wordle.Board
         public void WriteWords(List<string> words)
         {
             // first write the secret word to ensure it's on the board
-            var secretStartX = random.Next(0, gridHeight);
-            var secretStartY =  random.Next(0, gridWidth);
+            var secretStartX = random.Next(0, gridWidth);
+            var secretStartY = random.Next(0, gridHeight);            
             var secretWordDir = (WordDirection) random.Next(0, 2);
             WriteWord(secretWord, secretStartX, secretStartY, secretWordDir, true);
 
             foreach(string word in words)
             {
-                var startx = random.Next(0, gridHeight);
-                var starty =  random.Next(0, gridWidth);
-                var worddir = (WordDirection) random.Next(0, 1);
+                var startx = random.Next(0, gridWidth);
+                var starty =  random.Next(0, gridHeight);
+                var worddir = (WordDirection) random.Next(0, 2);                
                 if (WriteWord(word, startx, starty, worddir, false))
                     WriteWord(word, startx, starty, worddir, true);
             }
@@ -71,6 +85,16 @@ namespace Wordle.Board
             int x = startX;
             int y = startY;
             int wordLength = word.Count();
+
+            if (direction == WordDirection.Horizontal && wordLength > gridWidth)
+            {
+                return false;
+            }
+
+            if (direction == WordDirection.Vertical && wordLength > gridHeight)
+            {
+                return false;
+            }
             
             //Clamp position
                 if(direction == WordDirection.Horizontal)
@@ -81,29 +105,28 @@ namespace Wordle.Board
             //Add a letter
             foreach(char ch in word)
             {
-                //Only commit after checking if there's space left, to not overwrite other letters
-                if (commit)
-                    Chars[x][y] = ch;
-                
                 //Check if there is space or that the letters match up
                 if (!(Chars[x][y] == ch || Chars[x][y] == (char)33))
                     return false;
+
+                //Only commit after checking if there's space left, to not overwrite other letters
+                if (commit)
+                    Chars[x][y] = ch;
                     
                 if(direction == WordDirection.Horizontal)
                     x++;
                 if(direction == WordDirection.Vertical)
                     y++;
-            }
-            
+            }            
             return true;
         }
         
         public void FillRestOfSpace()
         {
-            for (int x = 0; x < 10; x++)
+            for (int x = 0; x < gridWidth; x++)
             {
-                for (int y = 0;  y < 10; y ++)
-                {
+                for (int y = 0; y < gridHeight; y++)
+                {                {
                     if (Chars[x][y] == (char)33)
                         Chars[x][y] = (char)random.Next(65, 91);
                 }
@@ -112,13 +135,24 @@ namespace Wordle.Board
 
         public string WordReader()
         {
-            string[] allWords = System.IO.File.ReadAllLines(Application.dataPath + "/WordList/wordle_ord.txt");
-            System.Random rand = new System.Random();
-            // check if the file is read correctly
-            Debug.Log(allWords[rand.Next(allWords.Length)]);
-            return allWords[rand.Next(allWords.Length)];
+            try
+            {
+                string[] allWords = System.IO.File.ReadAllLines(Application.dataPath + "/WordList/wordle_ord.txt");
+                if (allWords.Length == 0)
+                {
+                    Debug.LogError("Word list is empty");
+                    return string.Empty;
+                }
+                string selectedWord = allWords[random.Next(allWords.Length)];
+                Debug.Log($"Selected word: {selectedWord}");
+                return selectedWord;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to read word list: {ex.Message}");
+                return string.Empty;
+            }
         }
-
         public void GenerateBoard()
         {
             for (int i = transform.childCount - 1; i >= 0; i--)
