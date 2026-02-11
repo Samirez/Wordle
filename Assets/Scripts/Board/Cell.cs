@@ -21,7 +21,7 @@ namespace Wordle.Board
             }
         }
 
-        public void Setup(int x, int y, string letterChar = "", string type = "normal")
+        public void Setup(int x, int y, string type = "normal", string letterChar = "")
         {
             this.x = x;
             this.y = y;

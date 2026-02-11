@@ -6,7 +6,7 @@ namespace Wordle.Core
     public class Menu : MonoBehaviour
     {
         private bool isMenuOpen = true;
-        private GameObject menuUI, scoreUI, settingsUI;
+        private GameObject menuUI, scoreUI, settingsUI, guessUI;
         private BoardGenerator boardGenerator;
 
         public void Awake()
@@ -28,6 +28,11 @@ namespace Wordle.Core
             {
                 settingsUI.SetActive(false);
             }
+            guessUI = GameObject.FindGameObjectsWithTag("GuessUI").Length > 0 ? GameObject.FindGameObjectsWithTag("GuessUI")[0] : null;
+            if (guessUI != null)
+            {
+                guessUI.SetActive(false);
+            }
             boardGenerator = FindFirstObjectByType<BoardGenerator>();
             if (boardGenerator == null)
             {
@@ -43,9 +48,15 @@ namespace Wordle.Core
                 Debug.LogError($"{name} ({GetType().Name}): Cannot start game; BoardGenerator not found.");
                 return;
             }
+            
             isMenuOpen = false;
             menuUI.SetActive(isMenuOpen);
             boardGenerator.InitializeBoard();
+           
+            if (guessUI != null)
+            {
+                guessUI.SetActive(true);
+            }
         }
         public void HighScores()
         {

@@ -10,6 +10,7 @@ namespace Wordle.Board
 {
     public class BoardGenerator : MonoBehaviour
     {
+        private const char EmptyCell = (char)33;
         [SerializeField] private GameObject tilePrefab;
         public int gridWidth = 5;
         public int gridHeight = 6;
@@ -19,7 +20,6 @@ namespace Wordle.Board
         public ObservableCollection<ObservableCollection<char>> Chars { get; set; }
         public List<string> Words { get; private set; } = new List<string>();
         private string secretWord;
-        private TMP_Text Letter;
 
         public enum WordDirection
         {
@@ -29,10 +29,9 @@ namespace Wordle.Board
 
         void Awake()
         {
-            Letter = tilePrefab.GetComponentInChildren<TMP_Text>();
-            if (Letter == null)
+            if (tilePrefab == null)
             {
-                Debug.LogWarning($"{name} ({GetType().Name}): Tile prefab is missing a TextMeshPro component in its children; letters may not display.");
+                Debug.LogWarning($"{name} ({GetType().Name}): Tile prefab not assigned; board generation may fail.");
             }
         }
 
@@ -71,7 +70,7 @@ namespace Wordle.Board
                 Chars.Add(new());
                 for (int y = 0;  y < gridHeight; y ++)
                 {
-                    Chars[x].Add((char)33); 
+                    Chars[x].Add(EmptyCell); 
                 }
             }
         }
@@ -92,8 +91,6 @@ namespace Wordle.Board
                 if (WriteWord(word, startx, starty, worddir, false))
                     WriteWord(word, startx, starty, worddir, true);
             }
-
-            ApplyCharsToBoard();
         }
 
         public bool WriteWord(IEnumerable<char> word, 
@@ -127,7 +124,7 @@ namespace Wordle.Board
             foreach(char ch in word)
             {
                 //Check if there is space or that the letters match up
-                if (!(Chars[x][y] == ch || Chars[x][y] == (char)33))
+                if (!(Chars[x][y] == ch || Chars[x][y] == EmptyCell))
                     return false;
 
                 //Only commit after checking if there's space left, to not overwrite other letters
@@ -148,7 +145,7 @@ namespace Wordle.Board
             {
                 for (int y = 0; y < gridHeight; y++)
                 {
-                    if (Chars[x][y] == (char)33)
+                    if (Chars[x][y] == EmptyCell)
                         Chars[x][y] = (char)random.Next(65, 91);
                 }
             }
@@ -173,7 +170,7 @@ namespace Wordle.Board
                     }
 
                     char ch = Chars[x][y];
-                    string letterChar = ch == (char)33 ? "" : ch.ToString();
+                    string letterChar = ch == EmptyCell ? "" : ch.ToString();
                     cell.Setup(x, y, letterChar: letterChar, type: cell.type);
                 }
             }
@@ -251,12 +248,16 @@ namespace Wordle.Board
                         Debug.LogWarning(
                             $"{name} ({GetType().Name}): '{tile.name}' at ({x}, {y}) is missing a Cell component; adding one.");
                         cell = tile.AddComponent<Cell>();
-                        Debug.Log("cell name"+cell.letter);
                     }
 
                     board[x, y] = cell;
                 }
             }
+        }
+
+        public string GetSecretWord()
+        {
+            return secretWord;
         }
     }
 }
