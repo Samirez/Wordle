@@ -29,18 +29,24 @@ namespace Wordle.Core
                 settingsUI.SetActive(false);
             }
             boardGenerator = FindFirstObjectByType<BoardGenerator>();
+            if (boardGenerator == null)
+            {
+                Debug.LogWarning(
+                    $"{name} ({GetType().Name}): BoardGenerator not found; board generation will be skipped.");
+            }
         }
 
         public void StartGame()
         {
+            if (boardGenerator == null)
+            {
+                Debug.LogError("Cannot start game: BoardGenerator not found.");
+                return;
+            }
             isMenuOpen = false;
             menuUI.SetActive(isMenuOpen);
-            if (boardGenerator != null)
-            {
-                boardGenerator.GenerateBoard();
-            }
+            boardGenerator.GenerateBoard();
         }
-
         public void HighScores()
         {
             isMenuOpen = false;

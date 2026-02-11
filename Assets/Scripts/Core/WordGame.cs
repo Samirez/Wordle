@@ -6,6 +6,7 @@ namespace Wordle.Core
 {
     public class WordGame : MonoBehaviour
     {
+        [SerializeField] private GameObject BoardPrefab;
         private string secretWord;
         public string WordReader()
         {

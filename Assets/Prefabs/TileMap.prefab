@@ -333,3 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d73120069376d74abe47eb8d12ad217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Cell
+  x: 0
+  y: 0
+  type: normal
+  letter: {fileID: 0}

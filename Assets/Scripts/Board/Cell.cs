@@ -17,8 +17,7 @@ namespace Wordle.Board
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void Setup(int x, int y, string letterChar = "", string type = "normal")
-        {
+        public void Setup(int x, int y, string type = "normal", string letterChar = "")        {
             this.x = x;
             this.y = y;
             this.type = type;
@@ -35,8 +34,7 @@ namespace Wordle.Board
             };
             if (letter != null)
             {
-                letter.text = letterChar.ToUpper();
-            }
+                letter.text = letterChar?.ToUpper() ?? "";            }
         }
     }
 }

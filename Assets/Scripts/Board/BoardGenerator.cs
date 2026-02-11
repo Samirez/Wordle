@@ -1,19 +1,19 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace Wordle.Board
 {   
     public class BoardGenerator : MonoBehaviour
     {
-       [SerializeField] private GameObject tilePrefab;
-       public int gridWidth = 5;
-       public int gridHeight = 6;
-       public float tileSize = 1.0f;
-       public Cell[,] board = new Cell[5, 6];
-
+        [SerializeField] private GameObject tilePrefab;
+        public int gridWidth = 5;
+        public int gridHeight = 6;
+        public float tileSize = 1.0f;
+        
+        public Cell[,] board;
 
         public void GenerateBoard()
         {
+            board = new Cell[gridWidth, gridHeight];
             Vector3 origin = transform.position;
             float xOffset = (gridWidth - 1) * 0.5f * tileSize;
             float yOffset = (gridHeight - 1) * 0.5f * tileSize;
