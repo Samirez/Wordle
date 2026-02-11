@@ -45,7 +45,7 @@ namespace Wordle.Core
             }
             isMenuOpen = false;
             menuUI.SetActive(isMenuOpen);
-            boardGenerator.GenerateBoard();
+            boardGenerator.InitializeBoard();
         }
         public void HighScores()
         {

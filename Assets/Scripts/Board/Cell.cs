@@ -9,15 +9,19 @@ namespace Wordle.Board
     {
         public int x, y;
         public string type = "normal"; // normal, correct, present, absent
-        public TextMeshPro letter;
+        public TMP_Text letter;
         private SpriteRenderer spriteRenderer;
 
         void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
+            if (letter == null)
+            {
+                letter = GetComponentInChildren<TMP_Text>(true);
+            }
         }
 
-        public void Setup(int x, int y, string type = "normal", string letterChar = "")
+        public void Setup(int x, int y, string letterChar = "", string type = "normal")
         {
             this.x = x;
             this.y = y;

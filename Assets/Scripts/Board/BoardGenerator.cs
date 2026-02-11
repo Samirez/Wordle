@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using Random = System.Random;
 
 namespace Wordle.Board
-{   
+{
     public class BoardGenerator : MonoBehaviour
     {
         [SerializeField] private GameObject tilePrefab;
@@ -18,11 +19,21 @@ namespace Wordle.Board
         public ObservableCollection<ObservableCollection<char>> Chars { get; set; }
         public List<string> Words { get; private set; } = new List<string>();
         private string secretWord;
+        private TMP_Text Letter;
 
         public enum WordDirection
         {
             Horizontal,
             Vertical
+        }
+
+        void Awake()
+        {
+            Letter = tilePrefab.GetComponentInChildren<TMP_Text>();
+            if (Letter == null)
+            {
+                Debug.LogWarning($"{name} ({GetType().Name}): Tile prefab is missing a TextMeshPro component in its children; letters may not display.");
+            }
         }
 
         void Start()
@@ -42,6 +53,14 @@ namespace Wordle.Board
                 Debug.LogError($"{name} ({GetType().Name}): Secret word is empty; board generation may be disabled.");
                 secretWord = "APPLE";
             }
+        }
+
+        public void InitializeBoard()
+        {
+            GenerateBoard();
+            FillWithEmptyChars();
+            WriteWords(Words);
+            FillRestOfSpace();
         }
 
         public void FillWithEmptyChars()
@@ -73,6 +92,8 @@ namespace Wordle.Board
                 if (WriteWord(word, startx, starty, worddir, false))
                     WriteWord(word, startx, starty, worddir, true);
             }
+
+            ApplyCharsToBoard();
         }
 
         public bool WriteWord(IEnumerable<char> word, 
@@ -126,9 +147,34 @@ namespace Wordle.Board
             for (int x = 0; x < gridWidth; x++)
             {
                 for (int y = 0; y < gridHeight; y++)
-                {                {
+                {
                     if (Chars[x][y] == (char)33)
                         Chars[x][y] = (char)random.Next(65, 91);
+                }
+            }
+            ApplyCharsToBoard();
+        }
+
+        private void ApplyCharsToBoard()
+        {
+            if (board == null || Chars == null)
+            {
+                return;
+            }
+
+            for (int x = 0; x < gridWidth; x++)
+            {
+                for (int y = 0; y < gridHeight; y++)
+                {
+                    Cell cell = board[x, y];
+                    if (cell == null)
+                    {
+                        continue;
+                    }
+
+                    char ch = Chars[x][y];
+                    string letterChar = ch == (char)33 ? "" : ch.ToString();
+                    cell.Setup(x, y, letterChar: letterChar, type: cell.type);
                 }
             }
         }
@@ -138,13 +184,17 @@ namespace Wordle.Board
             try
             {
                 string[] allWords = System.IO.File.ReadAllLines(Application.dataPath + "/WordList/wordle_ord.txt");
+                
                 if (allWords.Length == 0)
                 {
                     Debug.LogError("Word list is empty");
                     return string.Empty;
                 }
                 string selectedWord = allWords[random.Next(allWords.Length)];
-                Debug.Log($"Selected word: {selectedWord}");
+
+                #if UNITY_EDITOR
+                    Debug.Log($"Selected word: {selectedWord}");
+                #endif
                 return selectedWord;
             }
             catch (Exception ex)
@@ -159,6 +209,7 @@ namespace Wordle.Board
             {
                 Transform child = transform.GetChild(i);
             #if UNITY_EDITOR
+
                 if (!Application.isPlaying)
                 {
                     DestroyImmediate(child.gameObject);
@@ -200,6 +251,7 @@ namespace Wordle.Board
                         Debug.LogWarning(
                             $"{name} ({GetType().Name}): '{tile.name}' at ({x}, {y}) is missing a Cell component; adding one.");
                         cell = tile.AddComponent<Cell>();
+                        Debug.Log("cell name"+cell.letter);
                     }
 
                     board[x, y] = cell;
