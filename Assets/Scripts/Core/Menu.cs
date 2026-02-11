@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using Wordle.Board;
 
 namespace Wordle.Core
 {
@@ -7,7 +7,8 @@ namespace Wordle.Core
     {
         private bool isMenuOpen = true;
         private GameObject menuUI, scoreUI, settingsUI;
-        
+        private BoardGenerator boardGenerator;
+
         public void Awake()
         {
             menuUI = GameObject.Find("MenuUI");
@@ -27,13 +28,17 @@ namespace Wordle.Core
             {
                 settingsUI.SetActive(false);
             }
+            boardGenerator = FindFirstObjectByType<BoardGenerator>();
         }
 
         public void StartGame()
         {
             isMenuOpen = false;
             menuUI.SetActive(isMenuOpen);
-            
+            if (boardGenerator != null)
+            {
+                boardGenerator.GenerateBoard();
+            }
         }
 
         public void HighScores()

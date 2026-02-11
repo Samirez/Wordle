@@ -17,11 +17,14 @@ namespace Wordle.Board
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void Setup(int x, int y, string type = "normal")
+        public void Setup(int x, int y, string letterChar = "", string type = "normal")
         {
             this.x = x;
             this.y = y;
             this.type = type;
+
+            if (spriteRenderer == null)
+                spriteRenderer = GetComponent<SpriteRenderer>();
 
             spriteRenderer.color = type switch
             {
@@ -30,10 +33,9 @@ namespace Wordle.Board
                 "absent" => Color.gray,
                 _ => Color.white,
             };
-
             if (letter != null)
             {
-                letter.text = type;
+                letter.text = letterChar.ToUpper();
             }
         }
     }

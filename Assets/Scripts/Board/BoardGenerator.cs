@@ -11,18 +11,19 @@ namespace Wordle.Board
        public float tileSize = 1.0f;
        public Cell[,] board = new Cell[5, 6];
 
-       void Start()
-        {
-            GenerateBoard();
-        }
 
         public void GenerateBoard()
         {
+            Vector3 origin = transform.position;
+            float xOffset = (gridWidth - 1) * 0.5f * tileSize;
+            float yOffset = (gridHeight - 1) * 0.5f * tileSize;
+
             for (int x = 0; x < gridWidth; x++)
             {
                 for (int y = 0; y < gridHeight; y++)
                 {
-                    Vector3 position = new Vector3(x * tileSize, y * tileSize, 0);
+                    Vector3 local = new Vector3(x * tileSize - xOffset, y * tileSize - yOffset, 0f);
+                    Vector3 position = origin + local;
                     GameObject tile = Instantiate(tilePrefab, position, Quaternion.identity);
                     tile.name = $"Tile_{x}_{y}";
                     tile.transform.parent = transform;
