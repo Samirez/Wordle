@@ -27,7 +27,7 @@ namespace Wordle.Core
             }
 
             targetWord = boardGenerator.GetSecretWord();
-            Debug.Log($"{name} ({GetType().Name}): Target word set to '{targetWord}'.");
+
             if (!string.IsNullOrEmpty(targetWord))
             {
                 targetWord = targetWord.ToUpperInvariant();
@@ -50,7 +50,9 @@ namespace Wordle.Core
 
             CheckGuess();
 
-             if (attemptsText != null)
+            guessInputField.text = string.Empty;
+
+            if (attemptsText != null)
             {
                 attemptsText.text = $"{maxAttempts - currentAttempt}";
             }
@@ -102,7 +104,7 @@ namespace Wordle.Core
                 return;
             }
 
-            int row = currentAttempt;
+            int row = (boardGenerator.gridHeight - 1) - currentAttempt;
             if (row < 0 || row >= boardGenerator.gridHeight)
             {
                 return;
@@ -122,7 +124,9 @@ namespace Wordle.Core
                 }
             }
 
-            for (int x = 0; x < guess.Length; x++)
+            int maxX = Mathf.Min(guess.Length, targetWord.Length, boardGenerator.board.GetLength(0));
+
+            for (int x = 0; x < maxX; x++)
             {
                 char guessChar = guess[x];
                 if (guessChar == targetWord[x] && remaining.TryGetValue(guessChar, out int count))
@@ -131,7 +135,7 @@ namespace Wordle.Core
                 }
             }
 
-            for (int x = 0; x < guess.Length; x++)
+            for (int x = 0; x < maxX; x++)
             {
                 char guessChar = guess[x];
                 string type = "absent";
@@ -149,7 +153,8 @@ namespace Wordle.Core
                 Cell cell = boardGenerator.board[x, row];
                 if (cell != null)
                 {
-                    cell.Setup(x, row, guessChar.ToString(), type);
+                    string existingLetter = cell.letter != null ? cell.letter.text : string.Empty;
+                    cell.Setup(x, row, type: type, letterChar: existingLetter);
                 }
             }
         }

@@ -189,8 +189,7 @@ namespace Wordle.Board
                 #if UNITY_EDITOR
                     Debug.Log($"Selected word: {selectedWord}");
                 #endif
-                secretWord = selectedWord.ToUpperInvariant();
-                return secretWord;
+                return selectedWord.ToUpperInvariant();
             }
             catch (Exception ex)
             {
