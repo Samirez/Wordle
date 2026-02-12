@@ -255,6 +255,11 @@ namespace Wordle.Board
                         letterRenderer.sortingLayerName = boardSortingLayer;
                         letterRenderer.sortingOrder = boardSortingOrder + letterSortingOrderOffset;
                     }
+                    else if (letterText != null)
+                    {
+                        Debug.LogWarning(
+                            $"{name} ({GetType().Name}): '{tile.name}' has TMP_Text '{letterText.name}' but no Renderer; cannot apply sorting order.");
+                    }
 
                     if (!tile.TryGetComponent<Cell>(out var cell))
                     {

@@ -33,7 +33,8 @@ namespace Wordle.Core
                 settingsUI.SetActive(false);
             }
 
-            guessUI = GameObject.FindGameObjectsWithTag("GuessUI").Length > 0 ? GameObject.FindGameObjectsWithTag("GuessUI")[0] : null;
+            var guessObjects = GameObject.FindGameObjectsWithTag("GuessUI");
+            guessUI = guessObjects.Length > 0 ? guessObjects[0] : null;
             
             if (guessUI != null)
             {
@@ -66,6 +67,10 @@ namespace Wordle.Core
             
             isMenuOpen = false;
             menuUI.SetActive(isMenuOpen);
+            if (!boardGenerator.gameObject.activeSelf)
+            {
+                boardGenerator.gameObject.SetActive(true);
+            }
             boardGenerator.InitializeBoard();
            
             if (guessUI != null)
@@ -109,15 +114,19 @@ namespace Wordle.Core
                 guessUI.SetActive(false);
             }
 
-            Destroy(boardGenerator.gameObject);
+            if (boardGenerator != null)
+            {
+                boardGenerator.gameObject.SetActive(false);
+            }
 
             if (gameOverUI != null)
             {
                 gameOverUI.SetActive(true);
+                
             }
         }
 
-        public void SubmitScore()
+        public void ReturnToMenu()
         {
             if (gameOverUI != null)
             {
@@ -126,6 +135,10 @@ namespace Wordle.Core
 
             isMenuOpen = true;
             menuUI.SetActive(isMenuOpen);
+            if (boardGenerator != null && !boardGenerator.gameObject.activeSelf)
+            {
+                boardGenerator.gameObject.SetActive(true);
+            }
         }
     }
 }

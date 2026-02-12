@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using Wordle.Board;
 
@@ -52,12 +51,12 @@ namespace Wordle.Core
                 return;
             }
 
+            playTime += Time.deltaTime;
+
             if (playTimeText != null)
             {
                 playTimeText.text = $"{playTime:F1}";
             }
-
-            playTime += Time.deltaTime;
         }
 
         public float GetPlayTime()
@@ -115,11 +114,7 @@ namespace Wordle.Core
             {
                 Debug.Log("Congratulations! You've guessed the word!");
                 ApplyGuessToBoard(guess);
-                isGameOver = true;
-                if (menu != null)
-                {
-                    StartCoroutine(DelayedGameOver());
-                }
+                TriggerGameOver();
                 return;
             } 
 
@@ -129,12 +124,22 @@ namespace Wordle.Core
             if (currentAttempt >= maxAttempts)
             {
                 Debug.Log("No more attempts left!");
-                isGameOver = true;
-                if (menu != null)
-                {
-                    StartCoroutine(DelayedGameOver());
-                }
+                TriggerGameOver();
                 return;
+            }
+        }
+
+        private void TriggerGameOver()
+        {
+            if (isGameOver)
+            {
+                return;
+            }
+
+            isGameOver = true;
+            if (menu != null)
+            {
+                StartCoroutine(DelayedGameOver());
             }
         }
 
