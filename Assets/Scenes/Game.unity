@@ -256,6 +256,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &547593974 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3581914359115965352, guid: e2966af589da4434595903ef89e9006a, type: 3}
+  m_PrefabInstance: {fileID: 1393000450481782688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,7 +417,7 @@ GameObject:
   - component: {fileID: 1535481060}
   - component: {fileID: 1535481059}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: GamePlayCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -636,6 +647,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff363a7a544a5124093b43ada93d7e53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Wordle.Core.WordGame
+  guessInputField: {fileID: 2134320155}
+  boardGenerator: {fileID: 1463892051}
+  attemptsText: {fileID: 547593974}
 --- !u!4 &1857446549
 Transform:
   m_ObjectHideFlags: 0
@@ -656,6 +670,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3874365650580040687, guid: e2966af589da4434595903ef89e9006a, type: 3}
   m_PrefabInstance: {fileID: 1393000450481782688}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2134320155 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4415776245513979617, guid: e2966af589da4434595903ef89e9006a, type: 3}
+  m_PrefabInstance: {fileID: 1393000450481782688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_InputField
 --- !u!1001 &1393000450481782688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -667,14 +692,6 @@ PrefabInstance:
     - target: {fileID: 33884100835177827, guid: e2966af589da4434595903ef89e9006a, type: 3}
       propertyPath: m_Name
       value: GuessInputUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 33884100835177827, guid: e2966af589da4434595903ef89e9006a, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 33884100835177827, guid: e2966af589da4434595903ef89e9006a, type: 3}
-      propertyPath: m_TagString
-      value: GuessUI
       objectReference: {fileID: 0}
     - target: {fileID: 3874365650580040687, guid: e2966af589da4434595903ef89e9006a, type: 3}
       propertyPath: m_Pivot.x
@@ -755,6 +772,26 @@ PrefabInstance:
     - target: {fileID: 3874365650580040687, guid: e2966af589da4434595903ef89e9006a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4694736778403379696, guid: e2966af589da4434595903ef89e9006a, type: 3}
+      propertyPath: m_Name
+      value: AttemptsLabel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6777009902132061965, guid: e2966af589da4434595903ef89e9006a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6777009902132061965, guid: e2966af589da4434595903ef89e9006a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1857446548}
+    - target: {fileID: 6777009902132061965, guid: e2966af589da4434595903ef89e9006a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSubmit
+      objectReference: {fileID: 0}
+    - target: {fileID: 8833442551652464392, guid: e2966af589da4434595903ef89e9006a, type: 3}
+      propertyPath: m_TagString
+      value: AttemptNumber
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

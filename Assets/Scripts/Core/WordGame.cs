@@ -6,8 +6,9 @@ namespace Wordle.Core
 {
     public class WordGame : MonoBehaviour
     {
-        [SerializeField] TextMeshPro guessInputField;
+        [SerializeField] TMP_InputField guessInputField;
         [SerializeField] BoardGenerator boardGenerator;
+        [SerializeField] TextMeshProUGUI attemptsText;
         private int maxAttempts = 6;
         private int currentAttempt = 0;
         private string targetWord;
@@ -26,11 +27,33 @@ namespace Wordle.Core
             }
 
             targetWord = boardGenerator.GetSecretWord();
+            Debug.Log($"{name} ({GetType().Name}): Target word set to '{targetWord}'.");
+            if (!string.IsNullOrEmpty(targetWord))
+            {
+                targetWord = targetWord.ToUpperInvariant();
+            }
         }
 
-        void Update()
+        public void OnSubmit()
         {
-            guessInputField.text = guessInputField.text.ToUpper();
+            if (guessInputField == null)
+            {
+                return;
+            }
+
+            string currentText = guessInputField.text;
+            string upperText = currentText.ToUpperInvariant();
+            if (!string.Equals(currentText, upperText, System.StringComparison.Ordinal))
+            {
+                guessInputField.text = upperText;
+            }
+
+            CheckGuess();
+
+             if (attemptsText != null)
+            {
+                attemptsText.text = $"{maxAttempts - currentAttempt}";
+            }
         }
 
         public void CheckGuess()
@@ -38,6 +61,12 @@ namespace Wordle.Core
             if (guessInputField == null)
             {
                 Debug.LogError($"{name} ({GetType().Name}): Guess input field not assigned.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(targetWord))
+            {
+                Debug.LogError($"{name} ({GetType().Name}): Target word is not initialized.");
                 return;
             }
 
@@ -49,24 +78,79 @@ namespace Wordle.Core
                 return;
             }
 
-            if (guess.Length != targetWord.Length)
-            {
-                Debug.LogWarning(
-                    $"{name} ({GetType().Name}): Guess length {guess.Length} does not match target word length {targetWord.Length}.");
-                return;
-            }
-
-            if (guess == targetWord)
+            if (string.Equals(guess, targetWord, System.StringComparison.Ordinal))
             {
                 Debug.Log("Congratulations! You've guessed the word!");
+                ApplyGuessToBoard(guess);
                 return;
             } 
+
+            ApplyGuessToBoard(guess);
 
             currentAttempt++;
             if (currentAttempt >= maxAttempts)
             {
                 Debug.Log("No more attempts left!");
                 return;
+            }
+        }
+
+        private void ApplyGuessToBoard(string guess)
+        {
+            if (boardGenerator == null || boardGenerator.board == null)
+            {
+                return;
+            }
+
+            int row = currentAttempt;
+            if (row < 0 || row >= boardGenerator.gridHeight)
+            {
+                return;
+            }
+
+            var remaining = new System.Collections.Generic.Dictionary<char, int>();
+            for (int i = 0; i < targetWord.Length; i++)
+            {
+                char targetChar = targetWord[i];
+                if (remaining.TryGetValue(targetChar, out int count))
+                {
+                    remaining[targetChar] = count + 1;
+                }
+                else
+                {
+                    remaining[targetChar] = 1;
+                }
+            }
+
+            for (int x = 0; x < guess.Length; x++)
+            {
+                char guessChar = guess[x];
+                if (guessChar == targetWord[x] && remaining.TryGetValue(guessChar, out int count))
+                {
+                    remaining[guessChar] = Mathf.Max(0, count - 1);
+                }
+            }
+
+            for (int x = 0; x < guess.Length; x++)
+            {
+                char guessChar = guess[x];
+                string type = "absent";
+
+                if (guessChar == targetWord[x])
+                {
+                    type = "correct";
+                }
+                else if (remaining.TryGetValue(guessChar, out int count) && count > 0)
+                {
+                    type = "present";
+                    remaining[guessChar] = count - 1;
+                }
+
+                Cell cell = boardGenerator.board[x, row];
+                if (cell != null)
+                {
+                    cell.Setup(x, row, guessChar.ToString(), type);
+                }
             }
         }
     }

@@ -33,10 +33,7 @@ namespace Wordle.Board
             {
                 Debug.LogWarning($"{name} ({GetType().Name}): Tile prefab not assigned; board generation may fail.");
             }
-        }
 
-        void Start()
-        {
             try
             {
                 secretWord = WordReader();
@@ -192,7 +189,8 @@ namespace Wordle.Board
                 #if UNITY_EDITOR
                     Debug.Log($"Selected word: {selectedWord}");
                 #endif
-                return selectedWord;
+                secretWord = selectedWord.ToUpperInvariant();
+                return secretWord;
             }
             catch (Exception ex)
             {
