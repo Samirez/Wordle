@@ -33,8 +33,7 @@ namespace Wordle.Core
                 settingsUI.SetActive(false);
             }
 
-            var guessObjects = GameObject.FindGameObjectsWithTag("GuessUI");
-            guessUI = guessObjects.Length > 0 ? guessObjects[0] : null;
+            guessUI = GameObject.FindGameObjectWithTag("GuessUI");
             
             if (guessUI != null)
             {
