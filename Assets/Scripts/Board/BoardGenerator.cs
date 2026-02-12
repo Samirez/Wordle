@@ -15,6 +15,9 @@ namespace Wordle.Board
         public int gridWidth = 5;
         public int gridHeight = 6;
         public float tileSize = 1.0f;
+        [SerializeField] private string boardSortingLayer = "UI";
+        [SerializeField] private int boardSortingOrder = 5;
+        [SerializeField] private int letterSortingOrderOffset = 1;
         readonly Random random = new();
         public Cell[,] board;
         public ObservableCollection<ObservableCollection<char>> Chars { get; set; }
@@ -239,6 +242,19 @@ namespace Wordle.Board
                     GameObject tile = Instantiate(tilePrefab, position, Quaternion.identity);
                     tile.name = $"Tile_{x}_{y}";
                     tile.transform.parent = transform;
+
+                    if (tile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
+                    {
+                        spriteRenderer.sortingLayerName = boardSortingLayer;
+                        spriteRenderer.sortingOrder = boardSortingOrder;
+                    }
+
+                    var letterText = tile.GetComponentInChildren<TMP_Text>(true);
+                    if (letterText != null && letterText.TryGetComponent<Renderer>(out var letterRenderer))
+                    {
+                        letterRenderer.sortingLayerName = boardSortingLayer;
+                        letterRenderer.sortingOrder = boardSortingOrder + letterSortingOrderOffset;
+                    }
 
                     if (!tile.TryGetComponent<Cell>(out var cell))
                     {

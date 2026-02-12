@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Wordle.Board;
 
@@ -9,9 +12,14 @@ namespace Wordle.Core
         [SerializeField] TMP_InputField guessInputField;
         [SerializeField] BoardGenerator boardGenerator;
         [SerializeField] TextMeshProUGUI attemptsText;
+        [SerializeField] TextMeshProUGUI playTimeText;
+        private Menu menu;
+        
         private int maxAttempts = 6;
         private int currentAttempt = 0;
         private string targetWord;
+        private float playTime = 0.0f;
+        private bool isGameOver = false;
 
         void Awake()
         {
@@ -32,6 +40,29 @@ namespace Wordle.Core
             {
                 targetWord = targetWord.ToUpperInvariant();
             }
+
+            menu = FindFirstObjectByType<Menu>();
+            
+        }
+
+        void Update()
+        {
+            if (isGameOver)
+            {
+                return;
+            }
+
+            if (playTimeText != null)
+            {
+                playTimeText.text = $"{playTime:F1}";
+            }
+
+            playTime += Time.deltaTime;
+        }
+
+        public float GetPlayTime()
+        {
+            return playTime;
         }
 
         public void OnSubmit()
@@ -84,6 +115,11 @@ namespace Wordle.Core
             {
                 Debug.Log("Congratulations! You've guessed the word!");
                 ApplyGuessToBoard(guess);
+                isGameOver = true;
+                if (menu != null)
+                {
+                    StartCoroutine(DelayedGameOver());
+                }
                 return;
             } 
 
@@ -93,7 +129,21 @@ namespace Wordle.Core
             if (currentAttempt >= maxAttempts)
             {
                 Debug.Log("No more attempts left!");
+                isGameOver = true;
+                if (menu != null)
+                {
+                    StartCoroutine(DelayedGameOver());
+                }
                 return;
+            }
+        }
+
+        private IEnumerator DelayedGameOver()
+        {
+            yield return new WaitForSeconds(5.0f);
+            if (menu != null)
+            {
+                menu.ShowGameOver();
             }
         }
 

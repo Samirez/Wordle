@@ -6,34 +6,49 @@ namespace Wordle.Core
     public class Menu : MonoBehaviour
     {
         private bool isMenuOpen = true;
-        private GameObject menuUI, scoreUI, settingsUI, guessUI;
+        private GameObject menuUI, scoreUI, settingsUI, guessUI, gameOverUI;
         private BoardGenerator boardGenerator;
 
         public void Awake()
         {
             menuUI = GameObject.Find("MenuUI");
+
             if (menuUI == null)
             {
                 menuUI = gameObject;
             }
+            
             menuUI.SetActive(isMenuOpen);
             scoreUI = GameObject.Find("ScoreUI");
+
             if (scoreUI != null)
             {
                 scoreUI.SetActive(false);
             }
 
             settingsUI = GameObject.Find("SettingsUI");
+
             if (settingsUI != null)
             {
                 settingsUI.SetActive(false);
             }
+
             guessUI = GameObject.FindGameObjectsWithTag("GuessUI").Length > 0 ? GameObject.FindGameObjectsWithTag("GuessUI")[0] : null;
+            
             if (guessUI != null)
             {
                 guessUI.SetActive(false);
             }
+
+            gameOverUI = GameObject.Find("GameOverUI");
+
+            if (gameOverUI != null)            
+            {
+                gameOverUI.SetActive(false);
+            }
+
             boardGenerator = FindFirstObjectByType<BoardGenerator>();
+
             if (boardGenerator == null)
             {
                 Debug.LogWarning(
@@ -85,6 +100,32 @@ namespace Wordle.Core
             #else
                 Application.Quit();
             #endif
+        }
+
+        public void ShowGameOver()
+        {
+            if (guessUI != null)
+            {
+                guessUI.SetActive(false);
+            }
+
+            Destroy(boardGenerator.gameObject);
+
+            if (gameOverUI != null)
+            {
+                gameOverUI.SetActive(true);
+            }
+        }
+
+        public void SubmitScore()
+        {
+            if (gameOverUI != null)
+            {
+                gameOverUI.SetActive(false);
+            }
+
+            isMenuOpen = true;
+            menuUI.SetActive(isMenuOpen);
         }
     }
 }
