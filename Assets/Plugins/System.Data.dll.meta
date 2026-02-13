@@ -1,2 +1,48 @@
 fileFormatVersion: 2
 guid: b9a78fb88b11780428ff1766b51f9e43
+PluginImporter:
+	serializedVersion: 2
+	iconMap: {}
+	executionOrder: {}
+	isPreloaded: 0
+	isOverridable: 0
+	isExplicitlyReferenced: 0
+	validateReferences: 1
+	platformData:
+	- first:
+			Any:
+		second:
+			enabled: 0
+			settings: {}
+	- first:
+			Editor: Editor
+		second:
+			enabled: 1
+			settings:
+				CPU: AnyCPU
+				OS: AnyOS
+				IncludeInEditor: 1
+	- first:
+			Standalone: StandaloneWindows64
+		second:
+			enabled: 1
+			settings:
+				CPU: AnyCPU
+	- first:
+			Standalone: StandaloneWindows
+		second:
+			enabled: 0
+			settings:
+				CPU: AnyCPU
+	- first:
+			Standalone: StandaloneLinux64
+		second:
+			enabled: 0
+			settings:
+				CPU: AnyCPU
+	- first:
+			Standalone: StandaloneOSX
+		second:
+			enabled: 0
+			settings:
+				CPU: AnyCPU

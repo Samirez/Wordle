@@ -1,5 +1,8 @@
 using UnityEngine;
+using TMPro;
 using Wordle.Board;
+using Wordle.HighScoreStorage;
+using UnityEngine.UI;
 
 namespace Wordle.Core
 {
@@ -8,7 +11,7 @@ namespace Wordle.Core
         private bool isMenuOpen = true;
         private GameObject menuUI, scoreUI, settingsUI, guessUI, gameOverUI;
         private BoardGenerator boardGenerator;
-
+        private PlayerRecords playerRecords;
         public void Awake()
         {
             menuUI = GameObject.Find("MenuUI");
@@ -53,6 +56,17 @@ namespace Wordle.Core
             {
                 Debug.LogWarning(
                     $"{name} ({GetType().Name}): BoardGenerator not found; board generation will be skipped.");
+            }
+        }
+
+        void Start()
+        {
+            playerRecords = FindFirstObjectByType<PlayerRecords>();
+
+            if (playerRecords == null)
+            {
+                Debug.LogWarning(
+                    $"{name} ({GetType().Name}): PlayerRecords not found; high score storage will be unavailable.");
             }
         }
 
@@ -121,8 +135,32 @@ namespace Wordle.Core
             if (gameOverUI != null)
             {
                 gameOverUI.SetActive(true);
-                
             }
+
+            SaveHighScore();
+        }
+
+        public void SaveHighScore()
+        {
+            TextMeshProUGUI playerNameText = GameObject.Find("PlayerText")?.GetComponent<TextMeshProUGUI>();
+            string playerName = playerNameText.ToString();
+            WordGame wordGame = FindFirstObjectByType<WordGame>(); 
+            float time = wordGame != null ? wordGame.GetPlayTime() : Time.timeSinceLevelLoad;
+            int score = CalculateScore(time);
+            if (playerName == null)
+            {
+                Debug.LogWarning($"{name} ({GetType().Name}): Player name text not found please enter a name to save your score.");
+                return;
+            } else
+            {
+                playerRecords.SaveRecord(playerName, score, time);
+            }
+            
+        }
+
+        private int CalculateScore(float time)
+        {
+            return Mathf.Max(0, Mathf.RoundToInt(1000 - time * 10));
         }
 
         public void ReturnToMenu()

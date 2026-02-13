@@ -17,7 +17,6 @@ namespace Wordle.Core
         private int maxAttempts = 6;
         private int currentAttempt = 0;
         private string targetWord;
-        private string playerName = "Player";
         private float playTime = 0.0f;
         private bool isGameOver = false;
 
