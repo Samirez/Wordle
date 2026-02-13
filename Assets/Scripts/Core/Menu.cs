@@ -140,13 +140,7 @@ namespace Wordle.Core
 
         public void ReturnFromGameOver()
         {
-            if (gameOverUI != null)
-            {
-                gameOverUI.SetActive(false);
-            }
-
-            isMenuOpen = true;
-            menuUI.SetActive(isMenuOpen);
+            SetMenuVisible(true);
         }
 
         public void SaveHighScore()
@@ -185,16 +179,24 @@ namespace Wordle.Core
 
         public void ReturnToMenu()
         {
-            if (gameOverUI != null)
-            {
-                gameOverUI.SetActive(false);
-            }
-
-            isMenuOpen = true;
-            menuUI.SetActive(isMenuOpen);
+            SetMenuVisible(true);
             if (boardGenerator != null && !boardGenerator.gameObject.activeSelf)
             {
                 boardGenerator.gameObject.SetActive(true);
+            }
+        }
+
+        private void SetMenuVisible(bool show)
+        {
+            isMenuOpen = show;
+            if (menuUI != null)
+            {
+                menuUI.SetActive(show);
+            }
+
+            if (gameOverUI != null)
+            {
+                gameOverUI.SetActive(!show);
             }
         }
     }
