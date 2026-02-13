@@ -22,7 +22,7 @@ namespace Wordle.Core
             }
             
             menuUI.SetActive(isMenuOpen);
-            scoreUI = GameObject.Find("ScoreUI");
+            scoreUI = GameObject.FindGameObjectWithTag("ScoreUI");
 
             if (scoreUI != null)
             {
@@ -78,8 +78,7 @@ namespace Wordle.Core
                 return;
             }
             
-            isMenuOpen = false;
-            menuUI.SetActive(isMenuOpen);
+            SetMenuVisible(false);
             if (!boardGenerator.gameObject.activeSelf)
             {
                 boardGenerator.gameObject.SetActive(true);
@@ -93,8 +92,7 @@ namespace Wordle.Core
         }
         public void HighScores()
         {
-            isMenuOpen = false;
-            menuUI.SetActive(isMenuOpen);
+            SetMenuVisible(false);
             if (scoreUI != null)
             {
                 scoreUI.SetActive(true);
@@ -103,8 +101,7 @@ namespace Wordle.Core
 
         public void OpenSettings()
         {
-            isMenuOpen = false;
-            menuUI.SetActive(isMenuOpen);
+            SetMenuVisible(false);
             if (settingsUI != null)
             {
                 settingsUI.SetActive(true);
@@ -179,6 +176,7 @@ namespace Wordle.Core
 
         public void ReturnToMenu()
         {
+            Debug.Log($"{name} ({GetType().Name}): Returning to main menu.");
             SetMenuVisible(true);
             if (boardGenerator != null && !boardGenerator.gameObject.activeSelf)
             {
@@ -197,6 +195,11 @@ namespace Wordle.Core
             if (gameOverUI != null)
             {
                 gameOverUI.SetActive(!show);
+            }
+
+            if (scoreUI != null)
+            {
+                scoreUI.SetActive(false);
             }
         }
     }

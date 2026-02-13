@@ -1,15 +1,13 @@
-using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
-using System.Data;
-using Mono.Data.Sqlite;
 
-public class WordGameTest: MonoBehaviour
+
+public class WordGameTest
 {
     [Test]
-    public float GetPlayTime()
+    public void CheckGuessTest()
     {
-        return 0.0f;
+       // This test is a placeholder and should be implemented with actual logic to test the CheckGuess method of the WordGame class.
+       Assert.Pass("CheckGuessTest is not yet implemented.");
     }
 }

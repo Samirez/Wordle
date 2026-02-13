@@ -1,13 +1,11 @@
 {
     "name": "Tests",
     "rootNamespace": "",
-    "namespace": [
-        "Wordle.Core",
-        "Wordle.HighScoreStorage",
-        "Wordle.Board"
-    ],
     "references": [
         "Assembly-CSharp",
+        "Wordle.Core",
+        "Wordle.HighScoreStorage",
+        "Wordle.Board",
         "nunit.framework",
         "Mono.Data.Sqlite",
         "System.Data",

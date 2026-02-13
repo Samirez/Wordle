@@ -7,6 +7,10 @@ using Mono.Data.Sqlite;
 
 public class PlayerRecordsTest
 {
+    private string lastPlayerName;
+    private int lastScore;
+    private float lastTime;
+    private bool hasInsert;
     
     [Test]
     public void DatabaseFileExists()
@@ -20,7 +24,7 @@ public class PlayerRecordsTest
    [TestCase("TestPlayer", 100, 30.5f)]
    [TestCase("AnotherPlayer", 150, 25.0f)]
    [TestCase("Player3", 200, 20.0f)]
-   [TestCase("", 50, 15.0f)] // Edge case: empty player name
+   [TestCase("", 50, 15.0f, TestName = "SaveRecord_Allows_Empty_PlayerName")] // Edge case: empty player name
    [TestCase("PlayerWithAVeryLongNameExceedingNormalLimits", 75, 10.0f)] // Edge case: very long player name
     public void SaveRecordTest(string playerName, int score, float time)
     {
@@ -29,10 +33,37 @@ public class PlayerRecordsTest
         using var connection = new SqliteConnection(connectionString);
                 connection.Open();
                 using var command = connection.CreateCommand();
+                command.CommandText = "CREATE TABLE IF NOT EXISTS Records (Id INTEGER PRIMARY KEY AUTOINCREMENT, PlayerName TEXT, Score INTEGER, Time FLOAT)";
+                command.ExecuteNonQuery();
                 command.CommandText = "INSERT INTO Records (PlayerName, Score, Time) VALUES (@name, @score, @time)";
                 command.Parameters.AddWithValue("@name", playerName);
                 command.Parameters.AddWithValue("@score", score);
                 command.Parameters.AddWithValue("@time", time);
             Assert.DoesNotThrow(() => command.ExecuteNonQuery(), "Failed to save record to database.");
+            lastPlayerName = playerName;
+            lastScore = score;
+            lastTime = time;
+            hasInsert = true;
+    }
+
+    [TearDown]
+    public void RemoveInsertedRecord()
+    {
+        if (!hasInsert)
+        {
+            return;
+        }
+
+        string filePath = Application.dataPath + "/Data_storage/PlayerRecords.db";
+        string connectionString = "URI=file:" + filePath;
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM Records WHERE PlayerName = @name AND Score = @score AND Time = @time";
+        command.Parameters.AddWithValue("@name", lastPlayerName);
+        command.Parameters.AddWithValue("@score", lastScore);
+        command.Parameters.AddWithValue("@time", lastTime);
+        command.ExecuteNonQuery();
+        hasInsert = false;
     }
 }
