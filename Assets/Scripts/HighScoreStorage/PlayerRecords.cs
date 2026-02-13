@@ -1,12 +1,36 @@
 using UnityEngine;
 using Mono.Data.Sqlite;
 using System.IO;
+using System.Collections.Generic;
 
 
 namespace Wordle.HighScoreStorage
 {   
+    public class Record
+    {
+        public string PlayerName { get; }
+        public int Score { get; }
+        public float Time { get; }
+
+        public Record(string playerName, int score, float time)
+        {
+            PlayerName = playerName;
+            Score = score;
+            Time = time;
+        }
+    }
+
     public class PlayerRecords : MonoBehaviour
     {
+        private string ConnectionString => "URI=file:" + Application.dataPath + "/Data_storage/PlayerRecords.db";
+
+        private SqliteConnection OpenConnection()
+        {
+            var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+            return connection;
+        }
+
         void Awake()
         {
            if (databaseExists())
@@ -34,9 +58,7 @@ namespace Wordle.HighScoreStorage
 
         void Start()
         {
-            string connectionString = "URI=file:" + Application.dataPath + "/Data_storage/PlayerRecords.db";
-            using var connection = new SqliteConnection(connectionString);
-            connection.Open();
+            using var connection = OpenConnection();
             using var command = connection.CreateCommand();
             command.CommandText = "CREATE TABLE IF NOT EXISTS Records (Id INTEGER PRIMARY KEY AUTOINCREMENT, PlayerName TEXT, Score INTEGER, Time FLOAT)";
             command.ExecuteNonQuery();
@@ -44,9 +66,7 @@ namespace Wordle.HighScoreStorage
 
         public void SaveRecord(string playerName, int score, float time)
         {
-            string connectionString = "URI=file:" + Application.dataPath + "/Data_storage/PlayerRecords.db";
-            using var connection = new SqliteConnection(connectionString);
-            connection.Open();
+            using var connection = OpenConnection();
             using var command = connection.CreateCommand();
             command.CommandText = "INSERT INTO Records (PlayerName, Score, Time) VALUES (@name, @score, @time)";
             command.Parameters.AddWithValue("@name", playerName);
@@ -55,21 +75,23 @@ namespace Wordle.HighScoreStorage
             command.ExecuteNonQuery();
         }
 
-        public void GetAllRecords()
+        public List<Record> GetAllRecords()
         {
-            string connectionString = "URI=file:" + Application.dataPath + "/Data_storage/PlayerRecords.db";
-            using var connection = new SqliteConnection(connectionString);
-            connection.Open();
+            var records = new List<Record>();
+            using var connection = OpenConnection();
             using var command = connection.CreateCommand();
             command.CommandText = "SELECT PlayerName, Score, Time FROM Records ORDER BY Score DESC, Time ASC";
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                string playerName = reader.GetString(0);
+                string playerName = reader.IsDBNull(0) ? "Unknown" : reader.GetString(0);
                 int score = reader.GetInt32(1);
                 float time = reader.GetFloat(2);
+                records.Add(new Record(playerName, score, time));
                 Debug.Log($"Player: {playerName}, Score: {score}, Time: {time}");
             }
+
+            return records;
         }
     }
 }

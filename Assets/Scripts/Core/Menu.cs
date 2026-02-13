@@ -192,6 +192,11 @@ namespace Wordle.Core
 
         public void ReturnToMenu()
         {
+            if (soundtrack != null && soundtrack.isPlaying)
+            {
+                soundtrack.Stop();
+            }
+
             Debug.Log($"{name} ({GetType().Name}): Returning to main menu.");
             SetMenuVisible(true);
             if (boardGenerator != null && !boardGenerator.gameObject.activeSelf)
