@@ -1,12 +1,12 @@
 using UnityEngine;
 using Mono.Data.Sqlite;
+using System.IO;
 
 
 namespace Wordle.HighScoreStorage
 {   
     public class PlayerRecords : MonoBehaviour
     {
-        // only use this for testing purposes, as it will overwrite the database file every time the game starts
         void Awake()
         {
            if (databaseExists())
@@ -16,7 +16,13 @@ namespace Wordle.HighScoreStorage
            else
            {
                Debug.Log($"{name} ({GetType().Name}): Database file not found; a new database will be created.");
-               SqliteConnection.CreateFile(Application.dataPath + "/Data_storage/PlayerRecords.db");
+               string storageDirectory = Application.dataPath + "/Data_storage";
+               if (!Directory.Exists(storageDirectory))
+               {
+                   Directory.CreateDirectory(storageDirectory);
+               }
+
+               SqliteConnection.CreateFile(storageDirectory + "/PlayerRecords.db");
            }
         }
 

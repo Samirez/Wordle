@@ -143,21 +143,31 @@ namespace Wordle.Core
         public void SaveHighScore()
         {
             TextMeshProUGUI playerNameText = GameObject.Find("PlayerText")?.GetComponent<TextMeshProUGUI>();
-            string playerName = playerNameText.ToString();
-            WordGame wordGame = FindFirstObjectByType<WordGame>(); 
-            float time = wordGame != null ? wordGame.GetPlayTime() : Time.timeSinceLevelLoad;
-            int score = CalculateScore(time);
-            if (playerName == null)
+            if (playerNameText == null)
             {
                 Debug.LogWarning($"{name} ({GetType().Name}): Player name text not found please enter a name to save your score.");
                 return;
-            } else
-            {
-                playerRecords.SaveRecord(playerName, score, time);
             }
-            
-        }
 
+            string playerName = playerNameText.text;
+            if (string.IsNullOrWhiteSpace(playerName))
+            {
+                Debug.LogWarning($"{name} ({GetType().Name}): Player name is empty, please enter a name to save your score.");
+                return;
+            }
+
+            if (playerRecords == null)
+            {
+                Debug.LogWarning($"{name} ({GetType().Name}): Cannot save high score; PlayerRecords not available.");
+                return;
+            }
+
+            WordGame wordGame = FindFirstObjectByType<WordGame>();
+            float time = wordGame != null ? wordGame.GetPlayTime() : Time.timeSinceLevelLoad;
+            int score = CalculateScore(time);
+            playerRecords.SaveRecord(playerName, score, time);
+            ReturnToMenu();
+        }
         private int CalculateScore(float time)
         {
             return Mathf.Max(0, Mathf.RoundToInt(1000 - time * 10));
