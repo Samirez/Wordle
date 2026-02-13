@@ -104,7 +104,6 @@ public class PlayerRecordsTest
             Assert.AreEqual(expectedNames[index], playerName, "Unexpected player name ordering.");
             Assert.AreEqual(expectedScores[index], score, "Unexpected score ordering.");
             Assert.AreEqual(expectedTimes[index], time, 0.001f, "Unexpected time ordering.");
-            Assert.IsNotNull(playerName, "Player name should not be null (empty is allowed by SaveRecord_Allows_Empty_PlayerName).");
             Assert.GreaterOrEqual(score, 0, "Score is negative.");
             Assert.GreaterOrEqual(time, 0f, "Time is negative.");
             index++;

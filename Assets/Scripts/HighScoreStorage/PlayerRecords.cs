@@ -2,23 +2,12 @@ using UnityEngine;
 using Mono.Data.Sqlite;
 using System.IO;
 using System.Collections.Generic;
+using System;
 
 
 namespace Wordle.HighScoreStorage
 {   
-    public class Record
-    {
-        public string PlayerName { get; }
-        public int Score { get; }
-        public float Time { get; }
-
-        public Record(string playerName, int score, float time)
-        {
-            PlayerName = playerName;
-            Score = score;
-            Time = time;
-        }
-    }
+    public record Record(string PlayerName, int Score, float Time);
 
     public class PlayerRecords : MonoBehaviour
     {
@@ -26,9 +15,27 @@ namespace Wordle.HighScoreStorage
 
         private SqliteConnection OpenConnection()
         {
-            var connection = new SqliteConnection(ConnectionString);
-            connection.Open();
-            return connection;
+            SqliteConnection connection = null;
+            try
+            {
+                connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                return connection;
+            }
+            catch (SqliteException ex)
+            {
+                connection?.Dispose();
+                throw new InvalidOperationException(
+                    $"{name} ({GetType().Name}): Failed to open SQLite connection using '{ConnectionString}'.",
+                    ex);
+            }
+            catch (Exception ex)
+            {
+                connection?.Dispose();
+                throw new InvalidOperationException(
+                    $"{name} ({GetType().Name}): Unexpected error while opening SQLite connection using '{ConnectionString}'.",
+                    ex);
+            }
         }
 
         void Awake()
@@ -88,7 +95,6 @@ namespace Wordle.HighScoreStorage
                 int score = reader.GetInt32(1);
                 float time = reader.GetFloat(2);
                 records.Add(new Record(playerName, score, time));
-                Debug.Log($"Player: {playerName}, Score: {score}, Time: {time}");
             }
 
             return records;

@@ -16,9 +16,9 @@ namespace Wordle.UI
         [SerializeField] private TextMeshProUGUI headerText;
         [SerializeField] private TextMeshProUGUI rowsText;
         [SerializeField, Min(1)] private int maxRows = 10;
-        [SerializeField, Min(6)] private int maxPlayerNameLength = 14;
+        [SerializeField, Min(6)] private int maxPlayerNameLength = 10;
         [SerializeField, Min(10f)] private float rowsMaxFontSize = 26f;
-        [SerializeField, Min(8f)] private float rowsMinFontSize = 14f;
+        [SerializeField, Min(8f)] private float rowsMinFontSize = 12f;
 
         private PlayerRecords playerRecords;
 
@@ -85,25 +85,7 @@ namespace Wordle.UI
 
         private TextMeshProUGUI CreateHeaderTextObject()
         {
-            GameObject headerObject = new GameObject("LeaderboardHeader");
-            RectTransform rect = headerObject.AddComponent<RectTransform>();
-            headerObject.AddComponent<CanvasRenderer>();
-            TextMeshProUGUI text = headerObject.AddComponent<TextMeshProUGUI>();
-
-            rect.SetParent(transform, false);
-            rect.anchorMin = new Vector2(0.12f, 0.78f);
-            rect.anchorMax = new Vector2(0.88f, 0.95f);
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-
-            text.alignment = TextAlignmentOptions.TopLeft;
-
-            if (text.font == null && TMP_Settings.defaultFontAsset != null)
-            {
-                text.font = TMP_Settings.defaultFontAsset;
-            }
-
-            return text;
+            return CreateTextObject("LeaderboardHeader", new Vector2(0.12f, 0.78f), new Vector2(0.88f, 0.95f));
         }
 
         private void OnEnable()
@@ -143,7 +125,7 @@ namespace Wordle.UI
                 }
             }
 
-            List<Record> records = playerRecords.GetAllRecords();
+            List<Record> records = new List<Record>(playerRecords.GetAllRecords());
             records.Sort((left, right) =>
             {
                 int scoreComparison = right.Score.CompareTo(left.Score);
@@ -186,14 +168,19 @@ namespace Wordle.UI
 
         private TextMeshProUGUI CreateRowsTextObject()
         {
-            GameObject rowsObject = new GameObject("LeaderboardRows");
-            RectTransform rect = rowsObject.AddComponent<RectTransform>();
-            rowsObject.AddComponent<CanvasRenderer>();
-            TextMeshProUGUI text = rowsObject.AddComponent<TextMeshProUGUI>();
+            return CreateTextObject("LeaderboardRows", new Vector2(0.12f, 0.18f), new Vector2(0.88f, 0.74f));
+        }
+
+        private TextMeshProUGUI CreateTextObject(string objectName, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject textObject = new GameObject(objectName);
+            RectTransform rect = textObject.AddComponent<RectTransform>();
+            textObject.AddComponent<CanvasRenderer>();
+            TextMeshProUGUI text = textObject.AddComponent<TextMeshProUGUI>();
 
             rect.SetParent(transform, false);
-            rect.anchorMin = new Vector2(0.12f, 0.18f);
-            rect.anchorMax = new Vector2(0.88f, 0.74f);
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
@@ -218,12 +205,6 @@ namespace Wordle.UI
             headerText.overflowMode = TextOverflowModes.Truncate;
             headerText.fontStyle = FontStyles.Bold;
             headerText.color = new Color(0.08f, 0.08f, 0.08f, 1f);
-
-            if (headerText.enableAutoSizing)
-            {
-                headerText.fontSizeMin = Mathf.Max(14f, headerText.fontSizeMin);
-                headerText.fontSizeMax = Mathf.Max(headerText.fontSizeMin + 2f, headerText.fontSizeMax);
-            }
         }
 
         private void ConfigureRowsText()
@@ -234,8 +215,13 @@ namespace Wordle.UI
             }
 
             rowsText.enableAutoSizing = true;
-            rowsText.fontSizeMin = rowsMinFontSize;
-            rowsText.fontSizeMax = rowsMaxFontSize;
+
+            if (rowsText.enableAutoSizing)
+            {
+                rowsText.fontSizeMin = Mathf.Min(rowsText.fontSizeMin, rowsMinFontSize);
+                rowsText.fontSizeMax = Mathf.Max(rowsText.fontSizeMin, Mathf.Min(rowsText.fontSizeMax, rowsMaxFontSize));
+            }
+
             rowsText.textWrappingMode = TextWrappingModes.NoWrap;
             rowsText.overflowMode = TextOverflowModes.Truncate;
             rowsText.color = new Color(0.08f, 0.08f, 0.08f, 1f);
