@@ -1,7 +1,14 @@
 {
     "name": "Tests",
+    "references": [
+            "Assembly-CSharp",
+            "UnityEngine.TestRunner",
+            "UnityEditor.TestRunner",
+            "nunit.framework",
+            "Wordle.HighScoreStorage"
+    ],
     "optionalUnityReferences": [
-        "TestAssemblies"
+        "TestAssemblies"  
     ],
     "includePlatforms": [
         "Editor"

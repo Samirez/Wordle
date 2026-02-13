@@ -3,32 +3,15 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-
-
 public class PlayerRecordsTest
 {
     
-    // A Test behaves as an ordinary method
     [Test]
-    public void PlayerRecordsSimplePasses()
-    {
-        // Use the Assert class to test conditions
-    }
-
-    [Test]
-    public bool DatabaseFileExists()
+    public void DatabaseFileExists()
     {
         string filePath = Application.dataPath + "/Data_storage/PlayerRecords.db";
-        return System.IO.File.Exists(filePath);
+        Assert.IsTrue(System.IO.File.Exists(filePath), $"Database file not found at: {filePath}");
+        Assert.IsFalse(string.IsNullOrEmpty(filePath), "Database file path is null or empty.");
     }
-
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
-    [UnityTest]
-    public IEnumerator PlayerRecordsWithEnumeratorPasses()
-    {
-        // Use the Assert class to test conditions.
-        // Use yield to skip a frame.
-        yield return null;
-    }
+    
 }
