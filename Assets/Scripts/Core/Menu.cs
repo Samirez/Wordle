@@ -12,6 +12,7 @@ namespace Wordle.Core
         private GameObject menuUI, scoreUI, settingsUI, guessUI, gameOverUI;
         private BoardGenerator boardGenerator;
         private PlayerRecords playerRecords;
+        private AudioSource soundtrack;
         public void Awake()
         {
             menuUI = GameObject.Find("MenuUI");
@@ -57,6 +58,11 @@ namespace Wordle.Core
                 Debug.LogWarning(
                     $"{name} ({GetType().Name}): BoardGenerator not found; board generation will be skipped.");
             }
+            soundtrack = GetComponent<AudioSource>();
+            if (soundtrack == null)
+            {
+                Debug.LogWarning($"{name} ({GetType().Name}): AudioSource for soundtrack not found.");
+            }
         }
 
         void Start()
@@ -72,6 +78,11 @@ namespace Wordle.Core
 
         public void StartGame()
         {
+            if (soundtrack != null && !soundtrack.isPlaying)
+            {
+                soundtrack.Play();
+            }
+
             if (boardGenerator == null)
             {
                 Debug.LogError($"{name} ({GetType().Name}): Cannot start game; BoardGenerator not found.");
@@ -119,6 +130,11 @@ namespace Wordle.Core
 
         public void ShowGameOver()
         {
+            if (soundtrack != null && soundtrack.isPlaying)
+            {
+                soundtrack.Stop();
+            }
+
             if (guessUI != null)
             {
                 guessUI.SetActive(false);

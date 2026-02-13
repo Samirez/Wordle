@@ -54,5 +54,22 @@ namespace Wordle.HighScoreStorage
             command.Parameters.AddWithValue("@time", time);
             command.ExecuteNonQuery();
         }
+
+        public void GetAllRecords()
+        {
+            string connectionString = "URI=file:" + Application.dataPath + "/Data_storage/PlayerRecords.db";
+            using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT PlayerName, Score, Time FROM Records ORDER BY Score DESC, Time ASC";
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                string playerName = reader.GetString(0);
+                int score = reader.GetInt32(1);
+                float time = reader.GetFloat(2);
+                Debug.Log($"Player: {playerName}, Score: {score}, Time: {time}");
+            }
+        }
     }
 }

@@ -46,6 +46,28 @@ public class PlayerRecordsTest
             hasInsert = true;
     }
 
+    [Test]
+    public void GetAllRecordsTest()
+    {
+        string filePath = Application.dataPath + "/Data_storage/PlayerRecords.db";
+        string connectionString = "URI=file:" + filePath;
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT PlayerName, Score, Time FROM Records ORDER BY Score DESC, Time ASC";
+        using var reader = command.ExecuteReader();
+        Assert.IsTrue(reader.HasRows, "No records found in the database.");
+        while (reader.Read())
+        {
+            string playerName = reader.GetString(0);
+            int score = reader.GetInt32(1);
+            float time = reader.GetFloat(2);
+            Assert.IsFalse(string.IsNullOrEmpty(playerName), "Player name is null or empty.");
+            Assert.GreaterOrEqual(score, 0, "Score is negative.");
+            Assert.GreaterOrEqual(time, 0f, "Time is negative.");
+        }
+    }
+
     [TearDown]
     public void RemoveInsertedRecord()
     {
