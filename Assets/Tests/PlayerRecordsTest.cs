@@ -2,6 +2,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using System.Data;
+using Mono.Data.Sqlite;
 
 public class PlayerRecordsTest
 {
@@ -13,5 +15,24 @@ public class PlayerRecordsTest
         Assert.IsTrue(System.IO.File.Exists(filePath), $"Database file not found at: {filePath}");
         Assert.IsFalse(string.IsNullOrEmpty(filePath), "Database file path is null or empty.");
     }
-    
+
+   [Test]
+   [TestCase("TestPlayer", 100, 30.5f)]
+   [TestCase("AnotherPlayer", 150, 25.0f)]
+   [TestCase("Player3", 200, 20.0f)]
+   [TestCase("", 50, 15.0f)] // Edge case: empty player name
+   [TestCase("PlayerWithAVeryLongNameExceedingNormalLimits", 75, 10.0f)] // Edge case: very long player name
+    public void SaveRecordTest(string playerName, int score, float time)
+    {
+        string filePath = Application.dataPath + "/Data_storage/PlayerRecords.db";
+        string connectionString = "URI=file:" + filePath;
+        using var connection = new SqliteConnection(connectionString);
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "INSERT INTO Records (PlayerName, Score, Time) VALUES (@name, @score, @time)";
+                command.Parameters.AddWithValue("@name", playerName);
+                command.Parameters.AddWithValue("@score", score);
+                command.Parameters.AddWithValue("@time", time);
+            Assert.DoesNotThrow(() => command.ExecuteNonQuery(), "Failed to save record to database.");
+    }
 }
