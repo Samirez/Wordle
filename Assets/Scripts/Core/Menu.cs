@@ -136,8 +136,17 @@ namespace Wordle.Core
             {
                 gameOverUI.SetActive(true);
             }
+        }
 
-            SaveHighScore();
+        public void ReturnFromGameOver()
+        {
+            if (gameOverUI != null)
+            {
+                gameOverUI.SetActive(false);
+            }
+
+            isMenuOpen = true;
+            menuUI.SetActive(isMenuOpen);
         }
 
         public void SaveHighScore()
@@ -166,8 +175,9 @@ namespace Wordle.Core
             float time = wordGame != null ? wordGame.GetPlayTime() : Time.timeSinceLevelLoad;
             int score = CalculateScore(time);
             playerRecords.SaveRecord(playerName, score, time);
-            ReturnToMenu();
+            ReturnFromGameOver();
         }
+        
         private int CalculateScore(float time)
         {
             return Mathf.Max(0, Mathf.RoundToInt(1000 - time * 10));
