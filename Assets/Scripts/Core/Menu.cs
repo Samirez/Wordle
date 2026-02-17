@@ -12,7 +12,8 @@ namespace Wordle.Core
         private GameObject menuUI, scoreUI, settingsUI, guessUI, gameOverUI;
         private BoardGenerator boardGenerator;
         private PlayerRecords playerRecords;
-        private AudioSource soundtrack;
+        private GameManager gameManager;
+        private AudioSource menuPanelAudio;
         public void Awake()
         {
             menuUI = GameObject.Find("MenuUI");
@@ -30,7 +31,7 @@ namespace Wordle.Core
                 scoreUI.SetActive(false);
             }
 
-            settingsUI = GameObject.Find("SettingsUI");
+            settingsUI = GameObject.FindGameObjectWithTag("SettingsUI");
 
             if (settingsUI != null)
             {
@@ -44,7 +45,7 @@ namespace Wordle.Core
                 guessUI.SetActive(false);
             }
 
-            gameOverUI = GameObject.Find("GameOverUI");
+            gameOverUI = GameObject.FindGameObjectWithTag("GameOverUI");
 
             if (gameOverUI != null)            
             {
@@ -58,16 +59,19 @@ namespace Wordle.Core
                 Debug.LogWarning(
                     $"{name} ({GetType().Name}): BoardGenerator not found; board generation will be skipped.");
             }
-            soundtrack = GetComponent<AudioSource>();
-            if (soundtrack == null)
+            gameManager = FindFirstObjectByType<GameManager>();
+            if (gameManager == null)
             {
-                Debug.LogWarning($"{name} ({GetType().Name}): AudioSource for soundtrack not found.");
+                Debug.LogWarning($"{name} ({GetType().Name}): GameManager not found; soundtrack control will be unavailable.");
             }
+
+            menuPanelAudio = menuUI != null ? menuUI.GetComponent<AudioSource>() : null;
         }
 
         void Start()
         {
             playerRecords = FindFirstObjectByType<PlayerRecords>();
+            gameManager?.StopSoundtrack();
 
             if (playerRecords == null)
             {
@@ -78,10 +82,7 @@ namespace Wordle.Core
 
         public void StartGame()
         {
-            if (soundtrack != null && !soundtrack.isPlaying)
-            {
-                soundtrack.Play();
-            }
+            gameManager?.PlaySoundtrack();
 
             if (boardGenerator == null)
             {
@@ -103,6 +104,7 @@ namespace Wordle.Core
         }
         public void HighScores()
         {
+            PlayMenuPanelSound();
             SetMenuVisible(false);
             if (scoreUI != null)
             {
@@ -112,6 +114,7 @@ namespace Wordle.Core
 
         public void OpenSettings()
         {
+            PlayMenuPanelSound();
             SetMenuVisible(false);
             if (settingsUI != null)
             {
@@ -130,10 +133,7 @@ namespace Wordle.Core
 
         public void ShowGameOver()
         {
-            if (soundtrack != null && soundtrack.isPlaying)
-            {
-                soundtrack.Stop();
-            }
+            gameManager?.StopSoundtrack();
 
             if (guessUI != null)
             {
@@ -192,17 +192,31 @@ namespace Wordle.Core
 
         public void ReturnToMenu()
         {
-            if (soundtrack != null && soundtrack.isPlaying)
-            {
-                soundtrack.Stop();
-            }
+            gameManager?.StopSoundtrack();
 
             Debug.Log($"{name} ({GetType().Name}): Returning to main menu.");
             SetMenuVisible(true);
-            if (boardGenerator != null && !boardGenerator.gameObject.activeSelf)
+            PlayMenuPanelSound();
+            if (guessUI != null)
             {
-                boardGenerator.gameObject.SetActive(true);
+                guessUI.SetActive(false);
             }
+
+            if (boardGenerator != null)
+            {
+                boardGenerator.ClearBoard();
+                boardGenerator.gameObject.SetActive(false);
+            }
+        }
+
+        private void PlayMenuPanelSound()
+        {
+            if (menuPanelAudio == null || menuPanelAudio.clip == null)
+            {
+                return;
+            }
+
+            menuPanelAudio.PlayOneShot(menuPanelAudio.clip, menuPanelAudio.volume);
         }
 
         private void SetMenuVisible(bool show)
@@ -221,6 +235,11 @@ namespace Wordle.Core
             if (scoreUI != null)
             {
                 scoreUI.SetActive(false);
+            }
+
+            if (settingsUI != null)
+            {
+                settingsUI.SetActive(false);
             }
         }
     }

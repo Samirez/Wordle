@@ -12,6 +12,7 @@ TagManager:
   - AttemptNumber
   - GameOverUI
   - ScoreUI
+  - SettingsUI
   layers:
   - Default
   - TransparentFX

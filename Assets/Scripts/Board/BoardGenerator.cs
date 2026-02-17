@@ -202,25 +202,7 @@ namespace Wordle.Board
         }
         public void GenerateBoard()
         {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                Transform child = transform.GetChild(i);
-            #if UNITY_EDITOR
-
-                if (!Application.isPlaying)
-                {
-                    DestroyImmediate(child.gameObject);
-                }
-                else
-                {
-                    Destroy(child.gameObject);
-                }
-            #else
-                Destroy(child.gameObject);
-            #endif
-            }
-
-            board = null;
+            ClearBoard();
             Vector3 origin = transform.position;
             float xOffset = (gridWidth - 1) * 0.5f * tileSize;
             float yOffset = (gridHeight - 1) * 0.5f * tileSize;
@@ -271,6 +253,30 @@ namespace Wordle.Board
                     board[x, y] = cell;
                 }
             }
+        }
+
+        public void ClearBoard()
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Transform child = transform.GetChild(i);
+            #if UNITY_EDITOR
+
+                if (!Application.isPlaying)
+                {
+                    DestroyImmediate(child.gameObject);
+                }
+                else
+                {
+                    Destroy(child.gameObject);
+                }
+            #else
+                Destroy(child.gameObject);
+            #endif
+            }
+
+            board = null;
+            Chars = null;
         }
 
         public string GetSecretWord()
