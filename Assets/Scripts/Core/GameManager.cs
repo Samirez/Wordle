@@ -17,6 +17,7 @@ namespace Wordle.Core
             }
 
             Instance = this;
+            DontDestroyOnLoad(gameObject);
 
             if (soundtrack == null)
             {
@@ -26,6 +27,14 @@ namespace Wordle.Core
             if (soundtrack == null)
             {
                 Debug.LogWarning($"{name} ({GetType().Name}): AudioSource for soundtrack not found.");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
             }
         }
 

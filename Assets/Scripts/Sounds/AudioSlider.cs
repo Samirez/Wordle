@@ -8,9 +8,10 @@ public class AudioSlider : MonoBehaviour
     [SerializeField] private AudioMixMode audioMixMode = AudioMixMode.LinearAudioSourceVolume;
     [SerializeField] private Slider slider;
     [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioMixer Mixer;
+    [SerializeField] private AudioMixer mixer;
+    [SerializeField] private string exposedParameterName = "MasterVolume";
 
-    [SerializeField] private TextMeshProUGUI ValueText;
+    [SerializeField] private TextMeshProUGUI valueText;
 
     public enum AudioMixMode
     {
@@ -48,9 +49,9 @@ public class AudioSlider : MonoBehaviour
     
     public void OnChangeSlider(float value)
     {
-        if (ValueText != null)
+        if (valueText != null)
         {
-            ValueText.SetText($"{value * 100:F0} %");
+            valueText.SetText($"{value * 100:F0} %");
         }
 
         switch (audioMixMode)
@@ -62,16 +63,28 @@ public class AudioSlider : MonoBehaviour
                 }
                 break;
             case AudioMixMode.LinearMixerVolume:
-                if (Mixer != null)
+                if (mixer != null)
                 {
-                    Mixer.SetFloat("Volume", (-80 + value * 100));
+                    if (string.IsNullOrWhiteSpace(exposedParameterName))
+                    {
+                        Debug.LogWarning($"{name} ({GetType().Name}): Exposed mixer parameter name is empty.");
+                        break;
+                    }
+
+                    mixer.SetFloat(exposedParameterName, Mathf.Lerp(-80f, 0f, value));
                 }
                 break;
             case AudioMixMode.LogarithmicMixerVolume:
-                if (Mixer != null)
+                if (mixer != null)
                 {
+                    if (string.IsNullOrWhiteSpace(exposedParameterName))
+                    {
+                        Debug.LogWarning($"{name} ({GetType().Name}): Exposed mixer parameter name is empty.");
+                        break;
+                    }
+
                     float safeValue = Mathf.Max(value, 0.0001f);
-                    Mixer.SetFloat("Volume", Mathf.Log10(safeValue) * 20);
+                    mixer.SetFloat(exposedParameterName, Mathf.Log10(safeValue) * 20);
                 }
                 break;
         }

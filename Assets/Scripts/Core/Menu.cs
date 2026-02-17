@@ -195,8 +195,8 @@ namespace Wordle.Core
             gameManager?.StopSoundtrack();
 
             Debug.Log($"{name} ({GetType().Name}): Returning to main menu.");
-            SetMenuVisible(true);
             PlayMenuPanelSound();
+            SetMenuVisible(true);
             if (guessUI != null)
             {
                 guessUI.SetActive(false);
