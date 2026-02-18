@@ -1,4 +1,5 @@
 ﻿<Solution>
+  <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="Wordle.csproj" />
   <Project Path="Tests.csproj" />
 </Solution>

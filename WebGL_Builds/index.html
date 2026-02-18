@@ -9,7 +9,7 @@
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <canvas id="unity-canvas" width="960" height="600" tabindex="0"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -38,13 +38,15 @@
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
         var div = document.createElement('div');
-        div.innerHTML = msg;
+        div.textContent = msg;
         warningBanner.appendChild(div);
         if (type == 'error') div.style = 'background: red; padding: 10px;';
         else {
           if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
           setTimeout(function() {
-            warningBanner.removeChild(div);
+            if (warningBanner.contains(div)) {
+              warningBanner.removeChild(div);
+            }
             updateBannerVisibility();
           }, 5000);
         }
@@ -52,12 +54,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebGL Builds.loader.js";
+      var loaderUrl = buildUrl + "/WebGLBuilds.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebGL Builds.data.br",
-        frameworkUrl: buildUrl + "/WebGL Builds.framework.js.br",
-        codeUrl: buildUrl + "/WebGL Builds.wasm.br",
+        dataUrl: buildUrl + "/WebGLBuilds.data.br",
+        frameworkUrl: buildUrl + "/WebGLBuilds.framework.js.br",
+        codeUrl: buildUrl + "/WebGLBuilds.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "Wordle",

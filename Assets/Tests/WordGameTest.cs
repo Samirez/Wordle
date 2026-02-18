@@ -39,8 +39,10 @@ public class WordGameTest
     {
         // Set the internal targetWord field directly (visible via InternalsVisibleTo)
         wordGame.targetWord = "APPLE";
+
+        Assert.AreEqual(0, wordGame.currentAttempt, "Current attempt should start at 0.");
         
-        guessInputField.text = "TEST";
+        guessInputField.text = "WRONG";
         
         wordGame.OnSubmit();
         

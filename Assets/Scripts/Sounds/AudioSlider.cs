@@ -71,7 +71,12 @@ public class AudioSlider : MonoBehaviour
                         break;
                     }
 
-                    mixer.SetFloat(exposedParameterName, Mathf.Lerp(-80f, 0f, value));
+                    float targetDb = Mathf.Lerp(-80f, 0f, value);
+                    bool isSet = mixer.SetFloat(exposedParameterName, targetDb);
+                    if (!isSet)
+                    {
+                        Debug.LogWarning($"{name} ({GetType().Name}): Failed to set exposed mixer parameter '{exposedParameterName}' to {targetDb:F2} dB (slider value: {value:F3}). Ensure the parameter is exposed in the AudioMixer.");
+                    }
                 }
                 break;
             case AudioMixMode.LogarithmicMixerVolume:
@@ -84,7 +89,12 @@ public class AudioSlider : MonoBehaviour
                     }
 
                     float safeValue = Mathf.Max(value, 0.0001f);
-                    mixer.SetFloat(exposedParameterName, Mathf.Log10(safeValue) * 20);
+                    float targetDb = Mathf.Log10(safeValue) * 20;
+                    bool isSet = mixer.SetFloat(exposedParameterName, targetDb);
+                    if (!isSet)
+                    {
+                        Debug.LogWarning($"{name} ({GetType().Name}): Failed to set exposed mixer parameter '{exposedParameterName}' to {targetDb:F2} dB (slider value: {value:F3}). Ensure the parameter is exposed in the AudioMixer.");
+                    }
                 }
                 break;
         }
