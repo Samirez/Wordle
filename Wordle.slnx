@@ -1,4 +1,4 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Wordle.csproj" />
   <Project Path="Tests.csproj" />
 </Solution>

@@ -8,7 +8,7 @@ namespace Wordle.Core
 {
     public class WordGame : MonoBehaviour
     {
-        [SerializeField] TMP_InputField guessInputField;
+        [SerializeField] public TMP_InputField guessInputField;
         [SerializeField] BoardGenerator boardGenerator;
         [SerializeField] TextMeshProUGUI attemptsText;
         [SerializeField] TextMeshProUGUI playTimeText;

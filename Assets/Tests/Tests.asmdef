@@ -2,15 +2,15 @@
     "name": "Tests",
     "rootNamespace": "",
     "references": [
-        "Assembly-CSharp",
-        "Wordle.Core",
-        "Wordle.HighScoreStorage",
-        "Wordle.Board",
+        "Wordle",
         "nunit.framework",
         "Mono.Data.Sqlite",
         "System.Data",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "UnityEngine",
+        "UnityEditor",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
