@@ -1,4 +1,1 @@
 # WebGL Sharing ID - Unique identifier for WebGL build artifact distribution
-# This ID must remain static across deployments to ensure consistent sharing links
-# Documentation added: 2026-02-18
-126ea141-e10a-429b-ac9c-2091b594f4bc
