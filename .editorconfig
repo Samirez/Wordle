@@ -1,4 +1,5 @@
 [*.{cs,vb}]
 
 # IDE0130: Namespace does not match folder structure
-dotnet_diagnostic.IDE0130.severity = warning
+# Suppressed because Unity project structure uses Assets/Scripts prefix which doesn't match namespace
+dotnet_diagnostic.IDE0130.severity = none

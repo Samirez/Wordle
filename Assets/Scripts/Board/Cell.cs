@@ -2,9 +2,7 @@ using UnityEngine;
 using TMPro;
 
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Wordle.Board
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class Cell : MonoBehaviour

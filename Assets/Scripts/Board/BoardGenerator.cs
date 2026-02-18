@@ -6,9 +6,7 @@ using TMPro;
 using UnityEngine;
 using Random = System.Random;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Wordle.Board
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public class BoardGenerator : MonoBehaviour
     {
@@ -118,25 +116,37 @@ namespace Wordle.Board
             
             //Clamp position
                 if(direction == WordDirection.Horizontal)
+                {
                     x = Math.Clamp(startX, 0, gridWidth - wordLength);
+                }
                 if(direction == WordDirection.Vertical)
+                {
                     y = Math.Clamp(startY, 0, gridHeight - wordLength);
+                }
             
             //Add a letter
             foreach(char ch in word)
             {
                 //Check if there is space or that the letters match up
                 if (!(Chars[x][y] == ch || Chars[x][y] == EmptyCell))
+                {
                     return false;
+                }
 
                 //Only commit after checking if there's space left, to not overwrite other letters
                 if (commit)
+                {
                     Chars[x][y] = ch;
+                }
                     
                 if(direction == WordDirection.Horizontal)
+                {
                     x++;
+                }
                 if(direction == WordDirection.Vertical)
+                {
                     y++;
+                }
             }            
             return true;
         }

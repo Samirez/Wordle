@@ -1,8 +1,6 @@
 using UnityEngine;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Wordle.Core
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public class GameManager : MonoBehaviour
     {
@@ -19,7 +17,12 @@ namespace Wordle.Core
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            
+            // Only call DontDestroyOnLoad in play mode (not in edit mode tests)
+            if (Application.isPlaying)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
 
             if (soundtrack == null)
             {

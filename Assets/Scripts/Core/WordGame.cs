@@ -4,14 +4,12 @@ using TMPro;
 using UnityEngine;
 using Wordle.Board;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Wordle.Core
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public class WordGame : MonoBehaviour
     {
         [SerializeField] private TMP_InputField guessInputField;
-        public TMP_InputField GuessInputField { get => guessInputField; set => guessInputField = value; }
+        public TMP_InputField GuessInputField => guessInputField;
         
         [SerializeField] BoardGenerator boardGenerator;
         [SerializeField] TextMeshProUGUI attemptsText;

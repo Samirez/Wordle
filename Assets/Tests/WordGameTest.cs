@@ -16,7 +16,10 @@ public class WordGameTest
         gameObject = new GameObject("WordGameTestObject");
         wordGame = gameObject.AddComponent<WordGame>();
         guessInputField = gameObject.AddComponent<TMP_InputField>();
-        wordGame.GuessInputField = guessInputField;
+        
+        // Use reflection to set the private guessInputField since the property is read-only
+        var guessInputFieldField = typeof(WordGame).GetField("guessInputField", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        guessInputFieldField.SetValue(wordGame, guessInputField);
     }
 
     [TearDown]
@@ -35,23 +38,41 @@ public class WordGameTest
     [Test]
     public void OnSubmitGuessTest()
     {
+        // Use reflection to set the private targetWord field so CheckGuess has a valid target
+        var targetWordField = typeof(WordGame).GetField("targetWord", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        targetWordField.SetValue(wordGame, "APPLE");
+        
         guessInputField.text = "TEST";
         
         wordGame.OnSubmit();
         
         // Verify that the input field was cleared after submission
         Assert.AreEqual(string.Empty, guessInputField.text, "Input field should be cleared after OnSubmit.");
+        
+        // Verify that the guess was processed by checking currentAttempt was incremented
+        var currentAttemptField = typeof(WordGame).GetField("currentAttempt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        int currentAttempt = (int)currentAttemptField.GetValue(wordGame);
+        Assert.AreEqual(1, currentAttempt, "Current attempt should be incremented to 1 after submitting an incorrect guess.");
     }
 
     [Test]
     public void CheckGuessTest()
     {
+        // Use reflection to set the private targetWord field for testing
+        var targetWordField = typeof(WordGame).GetField("targetWord", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        targetWordField.SetValue(wordGame, "APPLE");
+        
         // Set a test value in the input field
         guessInputField.text = "APPLE";
-        string guess = guessInputField.text;
         
-        Assert.IsNotNull(guess, "Guess should not be null.");
-        Assert.IsNotEmpty(guess, "Guess should not be empty.");
-        Assert.AreEqual("APPLE", guess, "Guess should match the input field text.");
+        // Call CheckGuess to evaluate the guess
+        wordGame.CheckGuess();
+        
+        // Get the private isGameOver field to verify the guess was correct
+        var isGameOverField = typeof(WordGame).GetField("isGameOver", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        bool isGameOver = (bool)isGameOverField.GetValue(wordGame);
+        
+        // Assert that the correct guess triggered game over
+        Assert.IsTrue(isGameOver, "Game should be over after guessing the correct word 'APPLE'.");
     }
 }

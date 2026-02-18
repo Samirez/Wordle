@@ -12,8 +12,16 @@ public class GameManagerTest
     public void SetUp()
     {
         gameManagerObject = new GameObject("GameManager");
-        gameManager = gameManagerObject.AddComponent<GameManager>();
         audioSource = gameManagerObject.AddComponent<AudioSource>();
+        
+        // Create a dummy AudioClip for testing playback
+        audioSource.clip = AudioClip.Create("TestClip", 44100, 1, 44100, false);
+        
+        gameManager = gameManagerObject.AddComponent<GameManager>();
+        
+        // Manually invoke Awake since it's not called automatically in edit mode tests
+        var awakeMethod = typeof(GameManager).GetMethod("Awake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        awakeMethod.Invoke(gameManager, null);
     }
 
     [TearDown]
@@ -21,6 +29,12 @@ public class GameManagerTest
     {
         if (gameManagerObject != null)
         {
+            // Manually invoke OnDestroy to clear the static Instance
+            if (gameManager != null)
+            {
+                var onDestroyMethod = typeof(GameManager).GetMethod("OnDestroy", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                onDestroyMethod.Invoke(gameManager, null);
+            }
             Object.DestroyImmediate(gameManagerObject);
         }
     }
@@ -45,8 +59,8 @@ public class GameManagerTest
     [Test]
     public void StopSoundtrackTest()
     {
-        // Play the soundtrack to ensure it is playing before stopping
-        gameManager.PlaySoundtrack();
+        // Directly start the audio source to ensure it's playing
+        audioSource.Play();
         Assert.IsTrue(audioSource.isPlaying, "Soundtrack should be playing before calling StopSoundtrack.");
 
         // Stop the soundtrack and test that it is not playing
@@ -60,6 +74,10 @@ public class GameManagerTest
         // Ensure the instance is set
         Assert.AreEqual(gameManager, GameManager.Instance, "GameManager instance should be set to the created instance.");
 
+        // Manually invoke OnDestroy to clear the static Instance before destroying
+        var onDestroyMethod = typeof(GameManager).GetMethod("OnDestroy", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        onDestroyMethod.Invoke(gameManager, null);
+        
         // Destroy the GameManager and test that the instance is null
         Object.DestroyImmediate(gameManagerObject);
         gameManagerObject = null; // Prevent double-destroy in TearDown

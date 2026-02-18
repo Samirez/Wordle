@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System;
 
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Wordle.HighScoreStorage
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {   
     public record Record(string PlayerName, int Score, float Time);
 
