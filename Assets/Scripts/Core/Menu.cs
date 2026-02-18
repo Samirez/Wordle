@@ -158,31 +158,49 @@ namespace Wordle.Core
 
         public void SaveHighScore()
         {
-            TextMeshProUGUI playerNameText = GameObject.Find("PlayerText")?.GetComponent<TextMeshProUGUI>();
-            if (playerNameText == null)
+            string playerName = string.Empty;
+
+            TMP_InputField playerNameInput = gameOverUI != null ? gameOverUI.GetComponentInChildren<TMP_InputField>(true) : null;
+            if (playerNameInput != null)
             {
-                Debug.LogWarning($"{name} ({GetType().Name}): Player name text not found please enter a name to save your score.");
-                return;
+                playerName = playerNameInput.text;
             }
 
-            string playerName = playerNameText.text;
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                Debug.LogWarning($"{name} ({GetType().Name}): Player name is empty, please enter a name to save your score.");
-                return;
+                TextMeshProUGUI playerNameText = GameObject.Find("PlayerText")?.GetComponent<TextMeshProUGUI>();
+                if (playerNameText != null)
+                {
+                    playerName = playerNameText.text;
+                }
             }
 
-            if (playerRecords == null)
+            if (string.IsNullOrWhiteSpace(playerName))
             {
-                Debug.LogWarning($"{name} ({GetType().Name}): Cannot save high score; PlayerRecords not available.");
-                return;
+                playerName = "Player";
             }
 
-            WordGame wordGame = FindFirstObjectByType<WordGame>();
-            float time = wordGame != null ? wordGame.GetPlayTime() : Time.timeSinceLevelLoad;
-            int score = CalculateScore(time);
-            playerRecords.SaveRecord(playerName, score, time);
-            ReturnFromGameOver();
+            try
+            {
+                if (playerRecords == null)
+                {
+                    Debug.LogWarning($"{name} ({GetType().Name}): Cannot save high score; PlayerRecords not available.");
+                    return;
+                }
+
+                WordGame wordGame = FindFirstObjectByType<WordGame>();
+                float time = wordGame != null ? wordGame.GetPlayTime() : Time.timeSinceLevelLoad;
+                int score = CalculateScore(time);
+                playerRecords.SaveRecord(playerName, score, time);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"{name} ({GetType().Name}): Failed to save high score; returning to menu anyway. {ex.Message}");
+            }
+            finally
+            {
+                ReturnFromGameOver();
+            }
         }
         
         private int CalculateScore(float time)

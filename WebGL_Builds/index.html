@@ -113,15 +113,25 @@
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
         }).then((unityInstance) => {
-          document.querySelector("#unity-loading-bar").style.display = "none";
-          document.querySelector("#unity-fullscreen-button").onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
+          if (fullscreenButton) {
+            fullscreenButton.onclick = () => {
+              unityInstance.SetFullscreen(1);
+            };
+          }
         }).catch((message) => {
+          if (fullscreenButton) {
+            fullscreenButton.onclick = null;
+            fullscreenButton.style.display = "none";
+          }
           alert(message);
+        }).finally(() => {
+          if (loadingBar) loadingBar.style.display = "none";
         });
       };
       script.onerror = () => {
