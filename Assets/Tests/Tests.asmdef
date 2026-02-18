@@ -8,8 +8,6 @@
         "System.Data",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "UnityEngine",
-        "UnityEditor",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [

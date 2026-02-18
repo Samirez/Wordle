@@ -6,7 +6,9 @@ using TMPro;
 using UnityEngine;
 using Random = System.Random;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Wordle.Board
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public class BoardGenerator : MonoBehaviour
     {
