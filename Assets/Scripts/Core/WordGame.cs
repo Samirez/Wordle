@@ -3,12 +3,15 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using Wordle.Board;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Tests")]
 
 namespace Wordle.Core
 {
     public class WordGame : MonoBehaviour
     {
-        [SerializeField] private TMP_InputField guessInputField;
+        [SerializeField] internal TMP_InputField guessInputField;
         public TMP_InputField GuessInputField => guessInputField;
         
         [SerializeField] BoardGenerator boardGenerator;
@@ -17,10 +20,10 @@ namespace Wordle.Core
         private Menu menu;
         
         private int maxAttempts = 6;
-        private int currentAttempt = 0;
-        private string targetWord;
+        internal int currentAttempt = 0;
+        internal string targetWord;
         private float playTime = 0.0f;
-        private bool isGameOver = false;
+        internal bool isGameOver = false;
 
         void Awake()
         {

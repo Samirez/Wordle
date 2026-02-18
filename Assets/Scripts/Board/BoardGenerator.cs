@@ -115,14 +115,14 @@ namespace Wordle.Board
             }
             
             //Clamp position
-                if(direction == WordDirection.Horizontal)
-                {
-                    x = Math.Clamp(startX, 0, gridWidth - wordLength);
-                }
-                if(direction == WordDirection.Vertical)
-                {
-                    y = Math.Clamp(startY, 0, gridHeight - wordLength);
-                }
+            if(direction == WordDirection.Horizontal)
+            {
+                x = Math.Clamp(startX, 0, gridWidth - wordLength);
+            }
+            if(direction == WordDirection.Vertical)
+            {
+                y = Math.Clamp(startY, 0, gridHeight - wordLength);
+            }
             
             //Add a letter
             foreach(char ch in word)

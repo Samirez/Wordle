@@ -8,6 +8,13 @@ public class GameManagerTest
     private GameManager gameManager;
     private AudioSource audioSource;
 
+    private void InvokePrivateMethod(object target, string methodName)
+    {
+        var method = target.GetType().GetMethod(methodName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        Assert.IsNotNull(method, $"{target.GetType().Name}.{methodName} method not found - check method visibility or name.");
+        method.Invoke(target, null);
+    }
+
     [SetUp]
     public void SetUp()
     {
@@ -20,8 +27,7 @@ public class GameManagerTest
         gameManager = gameManagerObject.AddComponent<GameManager>();
         
         // Manually invoke Awake since it's not called automatically in edit mode tests
-        var awakeMethod = typeof(GameManager).GetMethod("Awake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        awakeMethod.Invoke(gameManager, null);
+        InvokePrivateMethod(gameManager, "Awake");
     }
 
     [TearDown]
@@ -32,8 +38,7 @@ public class GameManagerTest
             // Manually invoke OnDestroy to clear the static Instance
             if (gameManager != null)
             {
-                var onDestroyMethod = typeof(GameManager).GetMethod("OnDestroy", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                onDestroyMethod.Invoke(gameManager, null);
+                InvokePrivateMethod(gameManager, "OnDestroy");
             }
             Object.DestroyImmediate(gameManagerObject);
         }
@@ -75,8 +80,7 @@ public class GameManagerTest
         Assert.AreEqual(gameManager, GameManager.Instance, "GameManager instance should be set to the created instance.");
 
         // Manually invoke OnDestroy to clear the static Instance before destroying
-        var onDestroyMethod = typeof(GameManager).GetMethod("OnDestroy", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        onDestroyMethod.Invoke(gameManager, null);
+        InvokePrivateMethod(gameManager, "OnDestroy");
         
         // Destroy the GameManager and test that the instance is null
         Object.DestroyImmediate(gameManagerObject);
