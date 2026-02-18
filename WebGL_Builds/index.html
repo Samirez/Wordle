@@ -38,7 +38,7 @@
           warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
         var div = document.createElement('div');
-        div.innerHTML = msg;
+        div.textContent = msg;
         warningBanner.appendChild(div);
         if (type == 'error') div.style = 'background: red; padding: 10px;';
         else {
@@ -52,12 +52,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebGL Builds.loader.js";
+      var loaderUrl = buildUrl + "/WebGL%20Builds.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebGL Builds.data.br",
-        frameworkUrl: buildUrl + "/WebGL Builds.framework.js.br",
-        codeUrl: buildUrl + "/WebGL Builds.wasm.br",
+        dataUrl: buildUrl + "/WebGL%20Builds.data.br",
+        frameworkUrl: buildUrl + "/WebGL%20Builds.framework.js.br",
+        codeUrl: buildUrl + "/WebGL%20Builds.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
         productName: "Wordle",
@@ -115,16 +115,22 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                alert(message);
-              });
-            };
+        }).then((unityInstance) => {
+          document.querySelector("#unity-loading-bar").style.display = "none";
+          document.querySelector("#unity-fullscreen-button").onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      script.onerror = () => {
+        document.querySelector("#unity-loading-bar").style.display = "none";
+        document.querySelector("#unity-progress-bar-full").style.width = "0%";
+        var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+        if (fullscreenButton) fullscreenButton.style.display = "none";
+        alert("Failed to load the Unity loader script from: " + loaderUrl + ". Check the browser console for details.");
+      };
 
       document.body.appendChild(script);
 
