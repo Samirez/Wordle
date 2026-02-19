@@ -84,7 +84,15 @@ jobs:
         shell: bash
         run: |
           git reset --hard HEAD
-          git clean -fd
+          git clean -fd || true
+          sudo rm -rf artifacts || true
+          sudo rm -f .plastic/plastic.wktree.bak || true
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::Workspace is still dirty before build:"
+            git status --porcelain
+            exit 1
+          fi
 
       # Build
       - name: Build project
