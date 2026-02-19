@@ -3,15 +3,13 @@ name: Actions
 on: [push, pull_request]
 
 concurrency:
-  group: wordle-${{ github.ref }}
+  group: wordle-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     name: Build my project 
     runs-on: ubuntu-latest
-    env:
-      UNITY_SERIAL: ""
     steps:
       # Checkout
       - name: Checkout repository
@@ -19,25 +17,19 @@ jobs:
         with:
           lfs: true
 
-      # Cache
-      - uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
-      # Validate required secrets
-      - name: Validate Unity secrets
+      # Validate Unity license mode (no serial reuse)
+      - name: Validate Unity license configuration
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         run: |
           missing=()
 
           [ -z "$UNITY_LICENSE" ] && missing+=("UNITY_LICENSE")
+          [ -n "${UNITY_SERIAL:-}" ] && missing+=("clear UNITY_SERIAL")
 
           if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error title=Missing required GitHub secrets::Please set ${missing[*]} in repository secrets."
+            echo "::error title=Invalid Unity secret setup::Set UNITY_LICENSE and remove UNITY_SERIAL for this workflow."
             exit 1
           fi
 
@@ -45,6 +37,7 @@ jobs:
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
         env:
+          UNITY_SERIAL: ""
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -53,6 +46,7 @@ jobs:
       - name: Build project
         uses: game-ci/unity-builder@v4
         env:
+          UNITY_SERIAL: ""
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           targetPlatform: WebGL
