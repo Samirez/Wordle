@@ -44,35 +44,41 @@ jobs:
             exit 1
           fi
 
-          decoded_license="$(printf '%s' "${UNITY_LICENSE}" | base64 --decode 2>/dev/null || true)"
+          if printf '%s' "${UNITY_LICENSE}" | grep -qiE '<(Unity|License|DeveloperData)'; then
+            echo "UNITY_LICENSE appears to be raw .ulf content (expected)."
+          else
+            decoded_license="$(printf '%s' "${UNITY_LICENSE}" | base64 --decode 2>/dev/null || true)"
+            if ! printf '%s' "${decoded_license}" | grep -qiE '<(Unity|License|DeveloperData)'; then
+              echo "::error::UNITY_LICENSE does not look like valid .ulf content. Paste the raw contents of Unity_lic.ulf into the secret."
+              exit 1
+            fi
 
-          if [ -z "${decoded_license}" ]; then
-            echo "::error::UNITY_LICENSE must be base64-encoded Unity license (.ulf) content. Do not use a serial key value in UNITY_LICENSE."
-            exit 1
+            {
+              echo "UNITY_LICENSE<<__UNITY_LICENSE__"
+              printf '%s\n' "${decoded_license}"
+              echo "__UNITY_LICENSE__"
+            } >> "$GITHUB_ENV"
+
+            echo "UNITY_LICENSE was base64; decoded to raw .ulf for subsequent steps."
           fi
 
-          if ! printf '%s' "${decoded_license}" | grep -qiE '<(Unity|License|DeveloperData)'; then
-            echo "::error::Decoded UNITY_LICENSE does not look like a valid .ulf license file."
-            exit 1
-          fi
+      - name: Debug activation env presence
+        shell: bash
+        run: |
+          [ -n "${UNITY_LICENSE:-}" ] && echo "UNITY_LICENSE: set" || echo "UNITY_LICENSE: missing"
+          [ -n "${UNITY_EMAIL:-}" ] && echo "UNITY_EMAIL: set" || echo "UNITY_EMAIL: missing"
+          [ -n "${UNITY_PASSWORD:-}" ] && echo "UNITY_PASSWORD: set" || echo "UNITY_PASSWORD: missing"
+          [ -n "${UNITY_SERIAL+x}" ] && echo "UNITY_SERIAL: set" || echo "UNITY_SERIAL: not set"
 
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
 
