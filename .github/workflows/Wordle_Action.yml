@@ -43,12 +43,18 @@ jobs:
             exit 1
           fi
 
+      # Guard against malformed serial secret breaking docker command parsing
+      - name: Block UNITY_SERIAL for this workflow
+        if: ${{ secrets.UNITY_SERIAL != '' }}
+        run: |
+          echo "::error title=Remove UNITY_SERIAL secret::This workflow uses UNITY_LICENSE activation. Remove or clear UNITY_SERIAL to prevent docker argument corruption."
+          exit 1
+
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_SERIAL: ""
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
@@ -59,7 +65,6 @@ jobs:
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_SERIAL: ""
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
