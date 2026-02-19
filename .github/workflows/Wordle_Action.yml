@@ -1,11 +1,14 @@
-name: Actions 😎
+name: Actions 
 
 on: [push, pull_request]
 
 jobs:
   build:
-    name: Build my project ✨
+    name: Build my project 
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
     steps:
       # Checkout
       - name: Checkout repository
@@ -14,35 +17,54 @@ jobs:
           lfs: true
 
       # Cache
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
+      - name: Validate Unity license secret
+        shell: bash
+        run: |
+          if [ -n "${UNITY_SERIAL:-}" ] || [ -n "${UNITY_EMAIL:-}" ] || [ -n "${UNITY_PASSWORD:-}" ]; then
+            echo "::error::UNITY_SERIAL/UNITY_EMAIL/UNITY_PASSWORD must not be set when using UNITY_LICENSE activation."
+            exit 1
+          fi
+
+          if [ -z "${UNITY_LICENSE}" ]; then
+            echo "::error::Missing UNITY_LICENSE secret."
+            exit 1
+          fi
+
+          decoded_license="$(printf '%s' "${UNITY_LICENSE}" | base64 --decode 2>/dev/null || true)"
+
+          if [ -z "${decoded_license}" ]; then
+            echo "::error::UNITY_LICENSE must be base64-encoded Unity license (.ulf) content. Do not use a serial key value in UNITY_LICENSE."
+            exit 1
+          fi
+
+          if ! printf '%s' "${decoded_license}" | grep -qiE '<(Unity|License|DeveloperData)'; then
+            echo "::error::Decoded UNITY_LICENSE does not look like a valid .ulf license file."
+            exit 1
+          fi
+
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: '${{ secrets.UNITY_LICENSE }}'
-          UNITY_EMAIL: '${{ secrets.UNITY_EMAIL }}'
-          UNITY_PASSWORD: '${{ secrets.UNITY_PASSWORD }}'
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v4
-        env:
-          UNITY_LICENSE: '${{ secrets.UNITY_LICENSE }}'
-          UNITY_EMAIL: '${{ secrets.UNITY_EMAIL }}'
-          UNITY_PASSWORD: '${{ secrets.UNITY_PASSWORD }}'
         with:
           targetPlatform: WebGL
 
       # Output
-      - uses: actions/upload-artifact@v4
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
           name: Build
           path: build
+          retention-days: 30
