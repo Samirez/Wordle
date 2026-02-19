@@ -8,8 +8,10 @@ concurrency:
 
 jobs:
   build:
-    name: Build my project ✨
+    name: Build my project 
     runs-on: ubuntu-latest
+    env:
+      UNITY_SERIAL: ""
     steps:
       # Checkout
       - name: Checkout repository
@@ -40,16 +42,6 @@ jobs:
 
           if [ ${#missing[@]} -gt 0 ]; then
             echo "::error title=Missing required GitHub secrets::Please set ${missing[*]} in repository secrets."
-            exit 1
-          fi
-
-      # Guard against malformed serial secret breaking docker command parsing
-      - name: Block UNITY_SERIAL for this workflow
-        env:
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        run: |
-          if [ -n "$UNITY_SERIAL" ]; then
-            echo "::error title=Remove UNITY_SERIAL secret::This workflow uses UNITY_LICENSE activation. Remove or clear UNITY_SERIAL to prevent docker argument corruption."
             exit 1
           fi
 
