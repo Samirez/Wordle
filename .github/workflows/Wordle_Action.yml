@@ -1,0 +1,8 @@
+name: Wordle_Workflow
+on: workflow_dispatch
+jobs: 
+  Init: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: print
+        run: echo "Starting deployment tests"
