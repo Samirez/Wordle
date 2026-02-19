@@ -31,14 +31,10 @@ jobs:
       - name: Validate Unity secrets
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         run: |
           missing=()
 
           [ -z "$UNITY_LICENSE" ] && missing+=("UNITY_LICENSE")
-          [ -z "$UNITY_EMAIL" ] && missing+=("UNITY_EMAIL")
-          [ -z "$UNITY_PASSWORD" ] && missing+=("UNITY_PASSWORD")
 
           if [ ${#missing[@]} -gt 0 ]; then
             echo "::error title=Missing required GitHub secrets::Please set ${missing[*]} in repository secrets."
@@ -50,8 +46,6 @@ jobs:
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
@@ -60,8 +54,6 @@ jobs:
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
 
