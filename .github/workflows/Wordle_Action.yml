@@ -45,10 +45,13 @@ jobs:
 
       # Guard against malformed serial secret breaking docker command parsing
       - name: Block UNITY_SERIAL for this workflow
-        if: ${{ secrets.UNITY_SERIAL != '' }}
+        env:
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         run: |
-          echo "::error title=Remove UNITY_SERIAL secret::This workflow uses UNITY_LICENSE activation. Remove or clear UNITY_SERIAL to prevent docker argument corruption."
-          exit 1
+          if [ -n "$UNITY_SERIAL" ]; then
+            echo "::error title=Remove UNITY_SERIAL secret::This workflow uses UNITY_LICENSE activation. Remove or clear UNITY_SERIAL to prevent docker argument corruption."
+            exit 1
+          fi
 
       # Test
       - name: Run tests
