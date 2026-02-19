@@ -41,6 +41,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          customImage: unityci/editor:ubuntu-6000.3.7f1-linux-il2cpp-3
 
       # Build
       - name: Build project
@@ -49,6 +50,7 @@ jobs:
           UNITY_SERIAL: ""
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
+          customImage: unityci/editor:ubuntu-6000.3.7f1-linux-il2cpp-3
           targetPlatform: WebGL
 
       # Output
