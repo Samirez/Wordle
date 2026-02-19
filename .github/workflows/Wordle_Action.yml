@@ -80,6 +80,12 @@ jobs:
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Reset workspace after tests
+        shell: bash
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v4
