@@ -1,0 +1,4 @@
+repository "Wordle/Wordle@5773249300770@cloud"
+  path "/"
+    br "/main"
+    co "/main"
