@@ -53,12 +53,12 @@ jobs:
               exit 1
             fi
 
+            delimiter="UNITY_LICENSE_$(openssl rand -hex 8)"
             {
-              echo "UNITY_LICENSE<<__UNITY_LICENSE__"
+              echo "UNITY_LICENSE<<${delimiter}"
               printf '%s\n' "${decoded_license}"
-              echo "__UNITY_LICENSE__"
+              echo "${delimiter}"
             } >> "$GITHUB_ENV"
-
             echo "UNITY_LICENSE was base64; decoded to raw .ulf for subsequent steps."
           fi
 
