@@ -9,6 +9,8 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     env:
       UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
     steps:
       # Checkout
       - name: Checkout repository
@@ -27,13 +29,18 @@ jobs:
       - name: Validate Unity license secret
         shell: bash
         run: |
-          if [ -n "${UNITY_SERIAL:-}" ] || [ -n "${UNITY_EMAIL:-}" ] || [ -n "${UNITY_PASSWORD:-}" ]; then
-            echo "::error::UNITY_SERIAL/UNITY_EMAIL/UNITY_PASSWORD must not be set when using UNITY_LICENSE activation."
+          if [ -n "${UNITY_SERIAL+x}" ]; then
+            echo "::error::UNITY_SERIAL is set in the runner environment. Remove UNITY_SERIAL from repository/environment/org secrets or variables when using UNITY_LICENSE strategy."
             exit 1
           fi
 
           if [ -z "${UNITY_LICENSE}" ]; then
             echo "::error::Missing UNITY_LICENSE secret."
+            exit 1
+          fi
+
+          if [ -z "${UNITY_EMAIL}" ] || [ -z "${UNITY_PASSWORD}" ]; then
+            echo "::error::Missing UNITY_EMAIL or UNITY_PASSWORD secret. These are required by GameCI activation."
             exit 1
           fi
 
@@ -52,12 +59,20 @@ jobs:
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
 
