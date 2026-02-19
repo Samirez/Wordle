@@ -1,10 +1,6 @@
-name: Actions 😎
+name: Actions
 
 on: [push, pull_request]
-
-concurrency:
-  group: wordle-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
@@ -18,40 +14,18 @@ jobs:
           lfs: true
 
       # Cache
-      - uses: actions/cache@v4
+      - uses: actions/cache@v3
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
-      # Validate required secrets
-      - name: Validate Unity secrets
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        run: |
-          missing=()
-
-          [ -z "$UNITY_EMAIL" ] && missing+=("UNITY_EMAIL")
-          [ -z "$UNITY_PASSWORD" ] && missing+=("UNITY_PASSWORD")
-
-          if [ -z "$UNITY_LICENSE" ]; then
-            missing+=("UNITY_LICENSE")
-          fi
-
-          if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error title=Missing required GitHub secrets::Please set ${missing[*]} in repository secrets."
-            exit 1
-          fi
-
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_LICENSING_SERVER: ${{ secrets.UNITY_LICENSING_SERVER }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
@@ -62,7 +36,6 @@ jobs:
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_LICENSING_SERVER: ${{ secrets.UNITY_LICENSING_SERVER }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
@@ -73,4 +46,3 @@ jobs:
         with:
           name: Build
           path: build
-          if-no-files-found: error
