@@ -1,61 +1,8 @@
-name: Actions
-
-on: [push, pull_request]
-
-concurrency:
-  group: wordle-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  build:
-    name: Build my project 
+name: Wordle_Workflow
+on: workflow_dispatch
+jobs: 
+  Init: 
     runs-on: ubuntu-latest
     steps:
-      # Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      # Validate Unity license mode (no serial reuse)
-      - name: Validate Unity license configuration
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        run: |
-          missing=()
-
-          [ -z "$UNITY_LICENSE" ] && missing+=("UNITY_LICENSE")
-          [ -n "${UNITY_SERIAL:-}" ] && missing+=("clear UNITY_SERIAL")
-
-          if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error title=Invalid Unity secret setup::Set UNITY_LICENSE and remove UNITY_SERIAL for this workflow."
-            exit 1
-          fi
-
-      # Test
-      - name: Run tests
-        uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_SERIAL: ""
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          customImage: unityci/editor:ubuntu-6000.3.7f1-linux-il2cpp-3
-
-      # Build
-      - name: Build project
-        uses: game-ci/unity-builder@v4
-        env:
-          UNITY_SERIAL: ""
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          customImage: unityci/editor:ubuntu-6000.3.7f1-linux-il2cpp-3
-          targetPlatform: WebGL
-
-      # Output
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Build
-          path: build
-          if-no-files-found: error
+      - name: print
+        run: echo "Starting deployment tests"
