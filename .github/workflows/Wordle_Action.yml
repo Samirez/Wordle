@@ -25,6 +25,24 @@ jobs:
           restore-keys: |
             Library-
 
+      # Validate required secrets
+      - name: Validate Unity secrets
+        env:
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          missing=()
+
+          [ -z "$UNITY_SERIAL" ] && missing+=("UNITY_SERIAL")
+          [ -z "$UNITY_EMAIL" ] && missing+=("UNITY_EMAIL")
+          [ -z "$UNITY_PASSWORD" ] && missing+=("UNITY_PASSWORD")
+
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error title=Missing required GitHub secrets::Please set ${missing[*]} in repository secrets."
+            exit 1
+          fi
+
       # Test
       - name: Run tests
         uses: game-ci/unity-test-runner@v4
