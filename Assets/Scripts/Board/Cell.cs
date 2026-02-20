@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -40,10 +41,11 @@ namespace Wordle.Board
 
             spriteRenderer.color = type switch
             {
+                CellType.Normal => Color.white,
                 CellType.Correct => Color.green,
                 CellType.Present => Color.yellow,
                 CellType.Absent => Color.gray,
-                _ => Color.white,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unexpected CellType value"),
             };
             if (letter != null)
             {
