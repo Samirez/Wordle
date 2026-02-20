@@ -8,7 +8,7 @@ namespace Wordle.Board
     public class Cell : MonoBehaviour
     {
         public int x, y;
-        public string type = "normal"; // normal, correct, present, absent
+        public string type = "normal"; 
         public TMP_Text letter;
         private SpriteRenderer spriteRenderer;
 
