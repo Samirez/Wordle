@@ -198,15 +198,15 @@ namespace Wordle.Core
             for (int x = 0; x < maxX; x++)
             {
                 char guessChar = guess[x];
-                string type = "absent";
+                CellType type = CellType.Absent;
 
                 if (guessChar == targetWord[x])
                 {
-                    type = "correct";
+                    type = CellType.Correct;
                 }
                 else if (remaining.TryGetValue(guessChar, out int count) && count > 0)
                 {
-                    type = "present";
+                    type = CellType.Present;
                     remaining[guessChar] = count - 1;
                 }
 

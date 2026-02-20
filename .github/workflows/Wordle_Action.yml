@@ -1,7 +1,7 @@
 # references:
 #   https://www.youtube.com/watch?v=gUZ9YXrJOAo
 #   https://game.ci/docs/github/getting-started
-name: Actions 
+name: Actions
 
 on: [push, pull_request]
 

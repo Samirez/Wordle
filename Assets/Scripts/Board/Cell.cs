@@ -4,11 +4,19 @@ using TMPro;
 
 namespace Wordle.Board
 {
+    public enum CellType
+    {
+        Normal,
+        Correct,
+        Present,
+        Absent,
+    }
+
     [RequireComponent(typeof(SpriteRenderer))]
     public class Cell : MonoBehaviour
     {
         public int x, y;
-        public string type = "normal"; 
+        public CellType type = CellType.Normal;
         public TMP_Text letter;
         private SpriteRenderer spriteRenderer;
 
@@ -21,7 +29,7 @@ namespace Wordle.Board
             }
         }
 
-        public void Setup(int x, int y, string letterChar = "", string type = "normal")
+        public void Setup(int x, int y, string letterChar = "", CellType type = CellType.Normal)
         {
             this.x = x;
             this.y = y;
@@ -32,9 +40,9 @@ namespace Wordle.Board
 
             spriteRenderer.color = type switch
             {
-                "correct" => Color.green,
-                "present" => Color.yellow,
-                "absent" => Color.gray,
+                CellType.Correct => Color.green,
+                CellType.Present => Color.yellow,
+                CellType.Absent => Color.gray,
                 _ => Color.white,
             };
             if (letter != null)
